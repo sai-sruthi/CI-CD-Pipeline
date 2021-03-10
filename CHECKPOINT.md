@@ -21,5 +21,5 @@ Pull Request:
 
 Group Call Image: 
 
-![image4](https://media.github.ncsu.edu/user/6557/files/ee2e2100-811c-11eb-98aa-9b496d6abfcc)
+![image4](https://media.github.ncsu.edu/user/6557/files/1ae23880-811d-11eb-8156-378fb073e4fd)
 
