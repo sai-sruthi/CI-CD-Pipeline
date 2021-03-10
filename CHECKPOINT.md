@@ -1,4 +1,3 @@
-
 ### Checkpoint 1 
 
 * Creating a Basic setup for Piepline Build
@@ -8,6 +7,19 @@
 * Use ansible for post configuration.
 
 
+Project Board Image: 
 
-#### Further Work: 
-* Complete the configuration and setup of Jenkins Server
+https://media.github.ncsu.edu/user/6557/files/ee2e2100-811c-11eb-98aa-9b496d6abfcc
+
+Config Server VM: 
+
+https://media.github.ncsu.edu/user/6557/files/65fd4b00-811f-11eb-8814-7053544d7336
+
+Pull Request: 
+
+https://media.github.ncsu.edu/user/16063/files/634e2600-811e-11eb-8b19-70c6ba3cc1ff
+
+Group Call Image: 
+
+https://media.github.ncsu.edu/user/6557/files/ee2e2100-811c-11eb-98aa-9b496d6abfcc
+
