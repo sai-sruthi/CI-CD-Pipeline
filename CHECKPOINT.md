@@ -6,6 +6,7 @@
 * Assign static ip address 192.168.33.20 for your VM.
 * Use ansible for post configuration.
 
+
 Project Board Image: 
 
 https://media.github.ncsu.edu/user/6557/files/ee2e2100-811c-11eb-98aa-9b496d6abfcc
