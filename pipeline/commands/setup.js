@@ -57,7 +57,7 @@ async function setup(force)
     }
 
     await bakerx.execute("run", `${name} ${image_name} --ip 192.168.33.20 --sync`).catch(e => e);
-    
+ 
 
     // Explicit wait for boot
     let sshInfo = {port: 22, hostname: '192.168.33.20'}
@@ -81,6 +81,9 @@ async function postconfiguration(name)
 {
     console.log(chalk.keyword('pink')(`Running post-configurations...`));
     console.log(chalk.keyword('pink')(`Installing Ansible...`));
+    await ssh('mkdir help');
+    await ssh('sudo mount -t vboxsf');
+    await ssh('sudo mount -t vboxsf vbox-share-0 ~/help/');
     await ssh('sudo add-apt-repository ppa:ansible/ansible');
     await ssh('sudo apt-get update');
 	await ssh('sudo apt-get install ansible -y');   
