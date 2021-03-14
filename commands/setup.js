@@ -6,6 +6,7 @@ const waitssh = require('waitssh');
 
 const bakerx = require('../lib/bakerx');
 const ssh = require('../lib/ssh');
+const scp = require('../lib/scp');
 
 exports.command = 'setup';
 exports.desc = 'Provision and configure a new development environment';
@@ -75,6 +76,7 @@ async function setup(force)
 
     //await createInventory();
 
+    await copyVaultPasswordFile();
 }
 
 async function postconfiguration(name) 
@@ -99,4 +101,20 @@ async function createInventory(name)
         ansible_ssh_common_args='-o StrictHostKeyChecking=no'  
         EOF`);
     await ssh('ansible localhost -m ping -i inventory');
+}
+
+/**
+ * This command should copy a .vault-pass file from the host to VM home directory.
+ */
+async function copyVaultPasswordFile() {
+    console.log(chalk.blue('copying .vault-pass to VM home directory'));
+
+    const vault = ".vault-pass";
+    const srcPath = path.join(__dirname, "../"); // the vault file is located in the root of the project
+    const vaultFile = `${srcPath}${vault}`
+    const destination = `vagrant@192.168.33.20:~/${vault}`; // home directory of the virtual machine
+
+    console.log(chalk.blue(`.vault-pass src: ${vaultFile}`));
+
+    await scp(vaultFile, destination); // initiate secure copy
 }
