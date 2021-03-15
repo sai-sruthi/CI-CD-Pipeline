@@ -1,4 +1,4 @@
-### Checkpoint 1 
+# Checkpoint 1 
 
 * Creating a Basic setup for Piepline Build
 * Created the build server using bakerx as local provisioner for your VM (named "config-srv"). 
