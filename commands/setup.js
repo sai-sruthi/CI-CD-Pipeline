@@ -8,6 +8,9 @@ const bakerx = require('../lib/bakerx');
 const ssh = require('../lib/ssh');
 const scp = require('../lib/scp');
 
+const configuration = require('../cm/config-srv.json');
+const configServerHost = `${configuration.user}@${configuration.ip}`;
+
 exports.command = 'setup';
 exports.desc = 'Provision and configure a new development environment';
 exports.builder = yargs => {
@@ -26,44 +29,35 @@ exports.handler = async argv => {
     const { force } = argv;
 
     (async () => {
-    
         await setup(force);
-
     })();
-
 };
 
 async function setup(force)
 {
-    // Use current working directory to derive name of virtual machine
-    let cwd = process.cwd().replace(/[/]/g,"-").replace(/\\/g,"-");
-    let name = `config-srv`;    
-    console.log(chalk.keyword('pink')(`Bringing up machine ${name}`));
+    console.log(chalk.yellow(`Bringing up machine ${configuration.name}`));
 
     // We will use the image we've pulled down with bakerx.
-    let image = path.join(os.homedir(), '.bakerx', '.persist', 'images', 'focal', 'box.ovf');
-    let image_name = 'focal'
+    let image = path.join(os.homedir(), '.bakerx', '.persist', 'images', configuration.image, 'box.ovf');
 
     if(force)
     {
         console.log(chalk.red(`Deleting running vm instance`));
-        await bakerx.execute("delete", `vm ${name}`).catch(e => e);
+        await bakerx.execute("delete", `vm ${configuration.name}`).catch(e => e);
     }
-
 
     if(!fs.existsSync(image))
     {
-        console.log(chalk.red(`Could not find ${image_name}. Pulling focal image with 'bakerx pull ${image_name} cloud-images.ubuntu.com'.`));
-        await bakerx.execute("pull", `${image_name} cloud-images.ubuntu.com`).catch(e => e);
+        console.log(chalk.red(`Could not find ${configuration.image}. Pulling focal image with 'bakerx pull ${configuration.image} cloud-images.ubuntu.com'.`));
+        await bakerx.execute("pull", `${configuration.image} cloud-images.ubuntu.com`).catch(e => e);
     }
 
-    await bakerx.execute("run", `${name} ${image_name} --ip 192.168.33.20 --sync`).catch(e => e);
+    await bakerx.execute("run", `${configuration.name} ${configuration.image} --ip ${configuration.ip} --sync`).catch(e => e);
     
-
     // Explicit wait for boot
-    let sshInfo = {port: 22, hostname: '192.168.33.20'}
+    let sshInfo = {port: configuration.sshPort, hostname: configuration.ip}
     try {
-        console.log(`Waiting for ssh to be ready on 192.168.33.20:22..`);        
+        console.log(`Waiting for ssh to be ready on ${configuration.ip}:${configuration.sshPort}`);        
         await waitssh(sshInfo);
     } catch (error) {
         console.error(error);
@@ -73,34 +67,50 @@ async function setup(force)
     
     // Run your post-configuration customizations for the Virtual Machine.
     await postconfiguration();
-
-    //await createInventory();
-
-    await copyVaultPasswordFile();
 }
 
 async function postconfiguration(name) 
 {
-    console.log(chalk.keyword('pink')(`Running post-configurations...`));
-    console.log(chalk.keyword('pink')(`Installing Ansible...`));
-    await ssh('sudo add-apt-repository ppa:ansible/ansible');
-    await ssh('sudo apt-get update');
-	await ssh('sudo apt-get install ansible -y');   
-    console.log(chalk.keyword('pink')(`Ansible Installed...`));
-    await ssh('ansible localhost -m ping -i inventory');
+    console.log(chalk.yellow(`Running post-configurations`));
+    await installAnsible();
+    await copyAnsibleInventory();
+    await copyVaultPasswordFile();
 
+    await verifyAnsible();
 }
 
+/**
+ * install ansible on config-srv vm
+ */
+async function installAnsible() {
+    console.log(chalk.blue(`Installing Ansible.`));
+    await ssh('sudo add-apt-repository ppa:ansible/ansible', configServerHost);
+    await ssh('sudo apt-get update', configServerHost);
+	await ssh('sudo apt-get install ansible -y', configServerHost);   
+    console.log(chalk.blue(`Ansible Installed.`));
+}
 
-async function createInventory(name) 
+/**
+ * verify ansible install with ping module
+ */
+async function verifyAnsible() {
+    await ssh(`ansible localhost -m ping -i ${configuration.ansibleInventory}`, configServerHost);
+}
+
+/**
+ * This command will copy the ansible inventory to the home directory of the VM
+ */
+async function copyAnsibleInventory() 
 {
-    await ssh(`sudo cat << EOF > ~/vagrant/inventory.ini
-        [localhost]
-        localhost ansible_ssh_user=vagrant 
-        [localhost:vars]
-        ansible_ssh_common_args='-o StrictHostKeyChecking=no'  
-        EOF`);
-    await ssh('ansible localhost -m ping -i inventory');
+    console.log(chalk.blue('copying ansible inventory to VM home directory'));
+
+    const srcPath = path.join(__dirname, "../cm/"); // the vault file is located in the root of the project
+    const inventoryFile = `${srcPath}${configuration.ansibleInventory}`
+    const destination = `${configServerHost}:~/${configuration.ansibleInventory}`; // home directory of the virtual machine
+
+    console.log(chalk.blue(`inventory src: ${inventoryFile}`));
+
+    await scp(inventoryFile, destination); // initiate secure copy
 }
 
 /**
