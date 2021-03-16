@@ -1,0 +1,6 @@
+vars:
+mongo_ip: localhost
+mongo_user: team02
+mongo_password: team02
+app_port: 3002
+mongo_port: 27017

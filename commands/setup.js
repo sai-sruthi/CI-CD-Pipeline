@@ -8,7 +8,7 @@ const bakerx = require('../lib/bakerx');
 const ssh = require('../lib/ssh');
 const scp = require('../lib/scp');
 
-const configuration = require('../cm/config-srv.json');
+const configuration = require('../pipeline/config-srv.json');
 const configServerHost = `${configuration.user}@${configuration.ip}`;
 
 exports.command = 'setup';
@@ -20,6 +20,14 @@ exports.builder = yargs => {
             describe: 'Force the old VM to be deleted when provisioning',
             default: false,
             type: 'boolean'
+        },
+        u: {
+            describe: 'username',
+            type: 'string'
+        },
+        p: {
+            describe: 'password',
+            type: 'string'
         }
     });
 };
@@ -96,7 +104,9 @@ async function installAnsible() {
  * verify ansible install with ping module
  */
 async function verifyAnsible() {
+    console.log(chalk.blue(`Verifying Ansible.`));
     await ssh(`ansible localhost -m ping -i ${configuration.ansibleInventory}`, configServerHost);
+    await buildCheckboxioEnvironment(); 
 }
 
 
@@ -111,7 +121,7 @@ async function copyAnsibleInventory()
 {
     console.log(chalk.blue('copying ansible inventory to VM home directory'));
 
-    const srcPath = path.join(__dirname, "../cm/"); // the vault file is located in the root of the project
+    const srcPath = path.join(__dirname, "../pipeline/"); // the inventory file is located in the pipeline folder of the project
     const inventoryFile = `${srcPath}${configuration.ansibleInventory}`
     const destination = `${configServerHost}:~/${configuration.ansibleInventory}`; // home directory of the virtual machine
 
@@ -134,4 +144,12 @@ async function copyVaultPasswordFile() {
     console.log(chalk.blue(`.vault-pass src: ${vaultFile}`));
 
     await scp(vaultFile, destination); // initiate secure copy
+}
+
+async function buildCheckboxioEnvironment(){
+    
+    console.log(chalk.blueBright('Setting up Checkbox.io Environment'));
+    let result = ssh(`sudo ansible-playbook /bakerx/pipeline/playbook.yml -i /bakerx/pipeline/inventory.ini`, 'vagrant@192.168.33.20');
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
+
 }
