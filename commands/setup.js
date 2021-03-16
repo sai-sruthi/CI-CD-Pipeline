@@ -77,6 +77,8 @@ async function postconfiguration(name)
     await copyVaultPasswordFile();
 
     await verifyAnsible();
+    await installJenkins();
+
 }
 
 /**
@@ -94,6 +96,11 @@ async function installAnsible() {
  * verify ansible install with ping module
  */
 async function verifyAnsible() {
+    await ssh(`ansible localhost -m ping -i ${configuration.ansibleInventory}`, configServerHost);
+}
+
+
+async function installJenkins() {
     await ssh(`ansible localhost -m ping -i ${configuration.ansibleInventory}`, configServerHost);
 }
 
