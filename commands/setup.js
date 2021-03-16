@@ -94,9 +94,9 @@ async function postconfiguration(name)
  */
 async function installAnsible() {
     console.log(chalk.blue(`Installing Ansible.`));
-    await ssh('sudo add-apt-repository ppa:ansible/ansible', configServerHost);
     await ssh('sudo apt-get update', configServerHost);
-	await ssh('sudo apt-get install ansible -y', configServerHost);   
+    await ssh('sudo apt install python3-pip -y', configServerHost);
+	await ssh('sudo pip3 install ansible', configServerHost);   
     console.log(chalk.blue(`Ansible Installed.`));
 }
 
