@@ -1,19 +1,59 @@
 ---
 - include_vars: main.yml
 
-- name: Jenkins apt repository key.
-  apt_key:
-    url: "deb https://pkg.jenkins.io/debian -stable binary/"
+- name: Update apt pm repo cache 
+  apt: 
     update_cache: true
+
+- name: Install packages and dependencies
+  apt:
+    name: "openjdk-8-jdk" 
+    state: present    
+    
+- name: Add Jenkins apt repository key.
+  apt_key:
+    url: "https://pkg.jenkins.io/debian-stable/jenkins.io.key"
     state: present
 
+    
 - name: Add Jenkins apt repository.
   apt_repository:
-    repo: "https://pkg.jenkins.io/debian -stable- /jenkins.io.key }}"
+    repo: "deb https://pkg.jenkins.io/debian-stable binary/"
     state: present
     update_cache: true
 
-- name: Install Jenkins.
-  apt:
-    deb: "jenkins"
-    state: present
+
+- name: ensure jenkins is installed
+  apt: name=jenkins update_cache=yes
+
+  # Configure Jenkins.
+- include_tasks: configure.yml
+
+- name: Create initialization scripts directory
+  file: path={{ jenkins_home }}/init.groovy.d
+        state=directory
+        owner=jenkins
+        group=jenkins
+        mode=0775
+
+- name: Add initialization script to setup basic security
+  template: src=/bakerx/pipeline/basic-security.groovy
+            dest={{ jenkins_home }}/init.groovy.d/basic-security.groovy
+
+- name: ensure jenkins is running
+  service: name=jenkins state=started enabled=yes
+
+- name: Wait for jenkins to come up
+  uri:
+    url: "http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix }}/cli/"
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 20
+  delay: 5
+  changed_when: false
+  check_mode: false
+
+# Update Jenkins and install configured plugins.
+# - include_tasks: plugins.yml
+
