@@ -1,0 +1,47 @@
+---
+- include_vars: main.yml
+
+- name: Install pip3 for mongo
+  apt: 
+    pkg: ['python3-pip', python3-setuptools]
+    state: present
+    update_cache: yes
+
+- name: Import public key for Mongo
+  apt_key:
+    url: "https://www.mongodb.org/static/pgp/server-4.2.asc"
+    state: present
+
+- name: Create a list file for MongoDB
+  apt_repository:
+    repo: deb https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse
+    state: present
+    filename: 'mongodb-org-4.2'
+
+- name: Install MongoDB
+  command: apt install -y mongodb-org
+
+- name: start mongodb
+  service:
+    name: mongod
+    state: started
+    enabled: yes
+
+- name: Install pymongo
+  pip:
+    name: pymongo
+    state: latest
+
+- name: Create MongoDB root user siteRootAdmin
+  mongodb_user:
+    login_port: "{{ mongo_port }}"
+    database: admin
+    name: "{{ mongo_user }}"
+    password: "{{ mongo_password }}"
+    roles: readWrite
+
+- name: Set mongo environment variables
+  lineinfile:
+    path: /etc/environment
+    line: "APP_PORT={{ app_port }}\n MONGO_PORT={{ vars.mongo_port }}\n MONGO_USER={{ mongo_user }}\n MONGO_PASSWORD={{ mongo_password }}\n MONGO_IP={{ mongo_ip }}"
+    create: yes
