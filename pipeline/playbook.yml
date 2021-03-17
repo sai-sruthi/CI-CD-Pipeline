@@ -7,7 +7,7 @@
   roles:
     - ping
     - jenkins
-    #- checkbox
-    #- mongo
+    - checkbox
+    - mongo
 
     
