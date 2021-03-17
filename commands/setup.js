@@ -111,12 +111,7 @@ async function configureServer() {
 
 async function createBuildJob() {
     console.log(chalk.blue(`Creating build job`));
-    if(configuration.jenkinsAPIKey) {
-        await ssh(`jenkins-jobs --conf /bakerx/pipeline/jenkins_jobs.ini --password ${configuration.jenkinsAPIKey} update /bakerx/pipeline/jenkins-build-job.yml`, configServerHost);
-    }
-    else {
-        console.log(chalk.red(`Jenkins API key not set`));
-    }
+    await ssh(`jenkins-jobs --conf /bakerx/pipeline/jenkins_jobs.ini --password $JENKINS_API_TOKEN update /bakerx/pipeline/jenkins-build-job.yml`, configServerHost);
 }
 
 /**

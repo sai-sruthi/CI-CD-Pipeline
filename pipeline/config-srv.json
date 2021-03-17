@@ -4,6 +4,5 @@
     "sshPort": 22,
     "ip": "192.168.33.20",
     "user": "vagrant",
-    "ansibleInventory": "/bakerx/pipeline/inventory",
-    "jenkinsAPIKey": ""
+    "ansibleInventory": "/bakerx/pipeline/inventory"
 }
