@@ -43,7 +43,7 @@ exports.handler = async argv => {
 
 async function setup(force)
 {
-    console.log(chalk.yellow(`Bringing up machine ${configuration.name}`));
+    
 
     // We will use the image we've pulled down with bakerx.
     let image = path.join(os.homedir(), '.bakerx', '.persist', 'images', configuration.image, 'box.ovf');
@@ -60,6 +60,7 @@ async function setup(force)
         await bakerx.execute("pull", `${configuration.image} cloud-images.ubuntu.com`).catch(e => e);
     }
 
+    console.log(chalk.yellow(`Bringing up machine ${configuration.name}`));
     await bakerx.execute("run", `${configuration.name} ${configuration.image} --ip ${configuration.ip} --sync`).catch(e => e);
     
     // Explicit wait for boot
@@ -81,10 +82,9 @@ async function postconfiguration(name)
 {
     console.log(chalk.yellow(`Running post-configurations`));
     await installAnsible();
-    await copyAnsibleInventory();
     await copyVaultPasswordFile();
-
     await verifyAnsible();
+    await configureServer();
 }
 
 /**
@@ -92,9 +92,9 @@ async function postconfiguration(name)
  */
 async function installAnsible() {
     console.log(chalk.blue(`Installing Ansible.`));
-    await ssh('sudo add-apt-repository ppa:ansible/ansible', configServerHost);
     await ssh('sudo apt-get update', configServerHost);
-	await ssh('sudo apt-get install ansible -y', configServerHost);   
+    await ssh('sudo apt install python3-pip -y', configServerHost);
+	await ssh('sudo pip3 install ansible', configServerHost);   
     console.log(chalk.blue(`Ansible Installed.`));
 }
 
@@ -104,23 +104,13 @@ async function installAnsible() {
 async function verifyAnsible() {
     console.log(chalk.blue(`Verifying Ansible.`));
     await ssh(`ansible localhost -m ping -i ${configuration.ansibleInventory}`, configServerHost);
-    await buildCheckboxioEnvironment(); 
 }
 
-/**
- * This command will copy the ansible inventory to the home directory of the VM
- */
-async function copyAnsibleInventory() 
-{
-    console.log(chalk.blue('copying ansible inventory to VM home directory'));
 
-    const srcPath = path.join(__dirname, "../pipeline/"); // the inventory file is located in the pipeline folder of the project
-    const inventoryFile = `${srcPath}${configuration.ansibleInventory}`
-    const destination = `${configServerHost}:~/${configuration.ansibleInventory}`; // home directory of the virtual machine
-
-    console.log(chalk.blue(`inventory src: ${inventoryFile}`));
-
-    await scp(inventoryFile, destination); // initiate secure copy
+async function configureServer() {
+    console.log(chalk.blueBright('Setting up Jenkins and Checkbox.io Environment'));
+    let result = ssh(`sudo ansible-playbook /bakerx/pipeline/playbook.yml -i ${configuration.ansibleInventory}`, configServerHost);
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
 }
 
 /**
@@ -139,10 +129,4 @@ async function copyVaultPasswordFile() {
     await scp(vaultFile, destination); // initiate secure copy
 }
 
-async function buildCheckboxioEnvironment(){
-    
-    console.log(chalk.blueBright('Setting up Checkbox.io Environment'));
-    let result = ssh(`sudo ansible-playbook /bakerx/pipeline/playbook.yml -i /bakerx/pipeline/inventory.ini`, 'vagrant@192.168.33.20');
-    if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
-}

@@ -1,0 +1,27 @@
+jenkins_hostname: 192.168.33.20
+jenkins_http_port: 9000
+jenkins_java_options: "-Djenkins.install.runSetupWizard=false"
+# Plugin list can use the plugin name, or a name/version dict.
+jenkins_init_file: /etc/default/jenkins
+jenkins_http_port_param: HTTP_PORT
+jenkins_url_prefix: ""
+jenkins_home: /var/lib/jenkins
+jenkins_plugins:
+  - workflow-aggregator
+jenkins_plugins_state: present
+jenkins_plugin_updates_expiration: 86400
+jenkins_plugin_timeout: 30
+jenkins_plugins_install_dependencies: true
+jenkins_updates_url: "https://updates.jenkins.io"
+jenkins_admin_username: admin
+jenkins_admin_password: admin
+jenkins_admin_password_file: ""
+
+jenkins_init_changes:
+  - option: "JAVA_ARGS" 
+    value: "{{ jenkins_java_options }}"
+
+
+
+
+
