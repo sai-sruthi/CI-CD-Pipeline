@@ -5,5 +5,5 @@
     "ip": "192.168.33.20",
     "user": "vagrant",
     "ansibleInventory": "/bakerx/pipeline/inventory",
-    "jenkinsAPIKey": "112294c750a45ff3fbe58895ad7b6172c1"
+    "jenkinsAPIKey": ""
 }

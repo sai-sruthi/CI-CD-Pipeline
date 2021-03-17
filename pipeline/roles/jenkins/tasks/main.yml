@@ -5,14 +5,12 @@
   apt: 
     update_cache: true
 
-- name: Install java and jenkins job builder
+- name: Install java & jenkins job builder
   apt:
-    name: "openjdk-8-jdk" 
+    pkg:
+    - openjdk-8-jdk
+    - jenkins-job-builder
     state: present
-  apt:
-    name: "jenkins-job-builder" 
-    state: present    
-
 
 - name: Add Jenkins apt repository key.
   apt_key:
