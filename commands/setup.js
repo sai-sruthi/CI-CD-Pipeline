@@ -20,14 +20,6 @@ exports.builder = yargs => {
             describe: 'Force the old VM to be deleted when provisioning',
             default: false,
             type: 'boolean'
-        },
-        u: {
-            describe: 'username',
-            type: 'string'
-        },
-        p: {
-            describe: 'password',
-            type: 'string'
         }
     });
 };
@@ -85,6 +77,7 @@ async function postconfiguration(name)
     await copyVaultPasswordFile();
     await verifyAnsible();
     await configureServer();
+    await createBuildJob();
 }
 
 /**
@@ -110,7 +103,15 @@ async function verifyAnsible() {
 async function configureServer() {
     console.log(chalk.blueBright('Setting up Jenkins and Checkbox.io Environment'));
     let result = ssh(`sudo ansible-playbook /bakerx/pipeline/playbook.yml -i ${configuration.ansibleInventory}`, configServerHost);
-    if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    if( result.error ) { 
+        console.log(result.error); 
+        process.exit( result.status ); 
+    }
+}
+
+async function createBuildJob() {
+    console.log(chalk.blue(`Creating build job`));
+    await ssh(`jenkins-jobs --conf /bakerx/pipeline/jenkins_jobs.ini --password ${configuration.jenkinsAPIKey} update /bakerx/pipeline/jenkins-build-job.yml`, configServerHost);
 }
 
 /**
