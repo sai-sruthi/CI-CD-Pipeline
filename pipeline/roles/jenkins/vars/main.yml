@@ -7,7 +7,12 @@ jenkins_url_prefix: ""
 jenkins_home: /var/lib/jenkins
 # Plugin list can use the plugin name, or a name/version dict.
 jenkins_plugins:
-  - workflow-aggregator
+# workflow-aggregator:
+#   enabled: yes
+  build-pipeline-plugin:
+    enabled: yes
+  git:
+    enabled: yes
 jenkins_plugins_state: present
 jenkins_plugin_updates_expiration: 86400
 jenkins_plugin_timeout: 30
