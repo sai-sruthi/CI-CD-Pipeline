@@ -1,6 +1,4 @@
-#
-# Example of a Play which handles Jenkins restarts during the state changes
-#
+
     - name: Install plugins without a specific version
       jenkins_plugin:
         name: "{{ item.key }}"
