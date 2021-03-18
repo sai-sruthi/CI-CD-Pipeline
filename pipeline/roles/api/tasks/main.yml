@@ -1,0 +1,19 @@
+- name: install json package
+  apt:
+    pkg:
+    - python3-jmespath
+    state: present
+
+- name: Generate Crumb for API token (JJS)
+  shell: curl -s --cookie-jar /tmp/cookies -u admin:admin http://localhost:9000/crumbIssuer/api/json
+  register: crumb_res
+
+- name: Generate API token
+  shell: curl -X POST -H 'Jenkins-Crumb:{{crumb_res.stdout|from_json|json_query('crumb')}}' --cookie /tmp/cookies http://localhost:9000/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken?newTokenName=\checkbox -u admin:admin
+  register: api_token
+
+- name: Set API key in environment
+  lineinfile:
+    path: /etc/environment
+    line: "JENKINS_API_TOKEN={{ api_token.stdout|from_json|json_query('data.tokenValue') }}\n"
+    create: yes
