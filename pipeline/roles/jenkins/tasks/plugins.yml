@@ -1,48 +1,76 @@
-- name: Get Jenkins crumb
-  uri:
-    user: admin
-    password: admin
-    force_basic_auth: yes
-    url: "http://192.168.33.20:9000/crumbIssuer/api/json"
-    return_content: yes
-  register: crumb_token
-  until: crumb_token.content.find('Please wait while Jenkins is getting ready') == -1
-  retries: 10
-  delay: 5
 
-- name: Set crumb token
-  set_fact:
-    crumb: "{{ crumb_token.json.crumbRequestField }}={{ crumb_token.json.crumb }}"
+    - name: Install plugins without a specific version
+      jenkins_plugin:
+        name: "{{ item.key }}"
+        url: "http://localhost:9000/"
+        url_username: "{{ jenkins_admin_username }}"
+        url_password: "{{ jenkins_admin_password }}"
+        force_basic_auth: yes
+      register: jenkins_plugin_unversioned
+      when: >
+        'version' not in item.value
+      with_dict: "{{ jenkins_plugins }}"
+      retries: 5
+      delay: 3
 
-- name: Install plugins
-  uri:
-    user: admin
-    password: admin
-    force_basic_auth: yes
-    url: "http://192.168.33.20:9000/pluginManager/install?plugin.{{ item }}.default=on&{{ crumb }}"
-    method: POST
-    status_code: [200, 302]
-  with_items: "{{ jenkins_plugins }}"
+    - name: Install plugins with a specific version
+      jenkins_plugin:
+        name: "{{ item.key }}"
+        url: "http://localhost:9000/"
+        version: "{{ item.value['version'] }}"
+        url_username: "{{ jenkins_admin_username }}"
+        url_password: "{{ jenkins_admin_password }}"
+        force_basic_auth: yes
+      register: jenkins_plugin_versioned
+      when: >
+        'version' in item.value
+      with_dict: "{{ jenkins_plugins }}"
+      retries: 2
+      delay: 3
 
+    - name: Initiate the fact
+      set_fact:
+        jenkins_restart_required: no
 
-- name: Wait for plugins to be installed
-  uri:
-    url: "http://192.168.33.20:9000/updateCenter/installStatus?{{ crumb }}"
-    return_content: yes
-  register: plugin_status
-  until: "'Pending' not in plugin_status.json.data.jobs|map(attribute='installStatus')"
-  retries: 60
-  delay: 10
+# Pause for a minute for jenkins-plugins to install.
+    - name: Pausing for a minute for jenkins-plugin install to complete
+      pause:
+        minutes: 1
 
-- name: Check if we need to restart Jenkins to activate plugins
-  uri:
-    url: "http://192.168.33.20:9000/updateCenter/api/json?tree=restartRequiredForCompletion&{{ crumb }}"
-    return_content: yes
-  register: jenkins_restart_required
+    - name: Check if restart is required by any of the versioned plugins
+      set_fact:
+        jenkins_restart_required: yes
+      when: item.changed
+      with_items: "{{ jenkins_plugin_versioned.results }}"
 
-- name: Restart Jenkins to activate new plugins
-  service: name=jenkins state=restarted
-  when: jenkins_restart_required.json.restartRequiredForCompletion|bool
+    - name: Check if restart is required by any of the unversioned plugins
+      set_fact:
+        jenkins_restart_required: yes
+      when: item.changed
+      with_items: "{{ jenkins_plugin_unversioned.results }}"
 
-- name: Wait for Jenkins to become available
-  wait_for: port=9000
+    - name: Restart Jenkins if required
+      service:
+        name: jenkins
+        state: restarted
+      when: jenkins_restart_required
+
+    - name: Wait for Jenkins to start up
+      uri:
+        url: http://localhost:9000
+        status_code: 200
+        timeout: 5
+      register: jenkins_service_status
+      # Keep trying for 5 mins in 5 sec intervals
+      retries: 60
+      delay: 5
+      until: >
+         'status' in jenkins_service_status and
+         jenkins_service_status['status'] == 200
+      when: jenkins_restart_required
+
+    - name: Reset the fact
+      set_fact:
+        jenkins_restart_required: no
+      when: jenkins_restart_required
+
