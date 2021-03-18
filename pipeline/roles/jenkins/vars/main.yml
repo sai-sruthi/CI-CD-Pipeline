@@ -1,11 +1,11 @@
 jenkins_hostname: 192.168.33.20
 jenkins_http_port: 9000
 jenkins_java_options: "-Djenkins.install.runSetupWizard=false"
+# Plugin list can use the plugin name, or a name/version dict.
 jenkins_init_file: /etc/default/jenkins
 jenkins_http_port_param: HTTP_PORT
 jenkins_url_prefix: ""
 jenkins_home: /var/lib/jenkins
-# Plugin list can use the plugin name, or a name/version dict.
 jenkins_plugins:
 # workflow-aggregator:
 #   enabled: yes

@@ -1,8 +1,10 @@
-- name: Install the nodejs & npm (included with install of nodejs version >12)
+- name: Install nodejs & npm
   apt:
-    name: nodejs
+    pkg:
+    - nodejs
+    - npm
     state: present
-  
+
 - name: Install nginx
   apt:
     update_cache: yes

@@ -6,8 +6,7 @@
   become: true
   roles:
     - ping
+    - checkbox
+    - mongo
     - jenkins
-   # - checkbox
-   # - mongo
-
-    
+    - api

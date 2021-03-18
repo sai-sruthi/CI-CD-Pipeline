@@ -5,11 +5,13 @@
   apt: 
     update_cache: true
 
-- name: Install packages and dependencies
+- name: Install java & jenkins job builder
   apt:
-    name: "openjdk-8-jdk" 
-    state: present    
-    
+    pkg:
+    - openjdk-8-jdk
+    - jenkins-job-builder
+    state: present
+
 - name: Add Jenkins apt repository key.
   apt_key:
     url: "https://pkg.jenkins.io/debian-stable/jenkins.io.key"
@@ -43,13 +45,18 @@
 - name: ensure jenkins is running
   service: name=jenkins state=started enabled=yes
 
+- name: Restart jenkins service so configurations are applied
+  ansible.builtin.service:
+    name: jenkins
+    state: restarted
+
 - name: Wait for jenkins to come up
   uri:
     url: "http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix }}/cli/"
     status_code: 200
   register: result
   until: result.status == 200
-  retries: 20
+  retries: 100
   delay: 5
   changed_when: false
   check_mode: false
