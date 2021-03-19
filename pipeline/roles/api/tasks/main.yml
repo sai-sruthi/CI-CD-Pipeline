@@ -12,8 +12,6 @@
   shell: curl -X POST -H 'Jenkins-Crumb:{{crumb_res.stdout|from_json|json_query('crumb')}}' --cookie /tmp/cookies http://localhost:9000/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken?newTokenName=\checkbox -u admin:admin
   register: api_token
 
-- name: Set API key in environment
-  lineinfile:
-    path: /etc/environment
-    line: "JENKINS_API_TOKEN={{ api_token.stdout|from_json|json_query('data.tokenValue') }}\n"
-    create: yes
+- name: Set API key as variable
+  ansible.builtin.set_fact:
+    jenkins_api_token: "{{ api_token.stdout|from_json|json_query('data.tokenValue') }}"
