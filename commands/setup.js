@@ -77,7 +77,6 @@ async function postconfiguration(name)
     await copyVaultPasswordFile();
     await verifyAnsible();
     await configureServer();
-    await createBuildJob();
 }
 
 /**
@@ -107,11 +106,6 @@ async function configureServer() {
         console.log(result.error); 
         process.exit( result.status ); 
     }
-}
-
-async function createBuildJob() {
-    console.log(chalk.blue(`Creating build job`));
-    await ssh(`jenkins-jobs --conf /bakerx/pipeline/jenkins_jobs.ini --password $JENKINS_API_TOKEN update /bakerx/pipeline/jenkins-build-job.yml`, configServerHost);
 }
 
 /**

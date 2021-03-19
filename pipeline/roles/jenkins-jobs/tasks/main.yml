@@ -1,0 +1,2 @@
+- name: Creating checkbox.io build job
+  shell: jenkins-jobs --conf /bakerx/pipeline/jenkins_jobs.ini --password $JENKINS_API_TOKEN update /bakerx/pipeline/jenkins-build-job.yml
