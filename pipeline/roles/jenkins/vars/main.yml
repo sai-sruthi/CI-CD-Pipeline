@@ -9,8 +9,6 @@ jenkins_home: /var/lib/jenkins
 jenkins_plugins:
   workflow-aggregator:
     enabled: yes
-  # pipeline:
-    # enabled: yes
   git:
     enabled: yes
 jenkins_plugins_state: present
