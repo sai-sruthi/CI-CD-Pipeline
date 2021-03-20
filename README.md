@@ -11,7 +11,6 @@ Git clone the project library
 $ ` git clone https://github.ncsu.edu/cscdevops-spring2021/DEVOPS-02.git`
 $ `cd DEVOPS-02`
 $ `npm install`
-$ `npm install`
 
 ## Pipeline Commands 
 
