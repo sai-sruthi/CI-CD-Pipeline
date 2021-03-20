@@ -21,9 +21,9 @@ $ `npm install`
 
 The command below performs the below mentioned tasks in sequential order: 
 
-    * Automatically configure a build server (config-srv) with jenkins and ansible.
-    * Automatically configure a build environment for a node web application (checkbox.io)
-    * Create a build job
+- Automatically configure a build server (config-srv) with jenkins and ansible.
+- Automatically configure a build environment for a node web application (checkbox.io)
+- Create a build job
 
 $ `pipeline setup`
 
@@ -40,10 +40,10 @@ As part of the setup command:
 
 ## Challenges
 
-- jenkins plugins installation timeouts
-- duration of ansible install resulted in long setup runs
-- python upgrade forced us to change ansible install approach
-- handling asynchronous events in ansible playbook tasks such as jenkins restarts, plugin installs, http requests
+- While installing jenkins plugins we faced installation timeouts.
+- The duration of ansible install resulted in long setup runs
+- Python upgrade forced us to change ansible install approach
+- Handling asynchronous events in ansible playbook tasks such as jenkins restarts, plugin installs, http requests
 - jenkins-job-builder did not support clear text password in jenkins.ini file. It required api token to be generated
 
 ## Screencast
