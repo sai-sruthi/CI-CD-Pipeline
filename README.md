@@ -42,7 +42,8 @@ As part of the setup command:
 
 ## Challenges
 
-- While installing jenkins plugins we faced installation timeouts.
+- Identifying the right jenkins plugins for checkbox.io build job 
+- While installing jenkins plugins we faced installation timeouts
 - The duration of ansible install resulted in long setup runs
 - Python upgrade forced us to change ansible install approach
 - Handling asynchronous events in ansible playbook tasks such as jenkins restarts, plugin installs, http requests
@@ -54,3 +55,7 @@ As part of the setup command:
 
     [Milestone 1](https://drive.google.com/file/d/1YqYwKel_IS_74SSFIRiGx5_AUXrJ4vMx/view?usp=sharing)
 
+## References
+
+- https://github.com/geerlingguy/ansible-role-jenkins
+- https://www.npmjs.com/package/jenkins
