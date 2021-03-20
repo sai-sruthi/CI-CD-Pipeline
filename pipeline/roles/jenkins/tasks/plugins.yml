@@ -10,7 +10,8 @@
       when: >
         'version' not in item.value
       with_dict: "{{ jenkins_plugins }}"
-      retries: 5
+      until: jenkins_plugin_unversioned is success
+      retries: 10
       delay: 3
 
     - name: Install plugins with a specific version
@@ -25,7 +26,8 @@
       when: >
         'version' in item.value
       with_dict: "{{ jenkins_plugins }}"
-      retries: 2
+      until: jenkins_plugin_versioned is success
+      retries: 10
       delay: 3
 
     - name: Initiate the fact
