@@ -8,16 +8,29 @@
 
 ## How to run 
 Git clone the project library 
+
 $ ` git clone https://github.ncsu.edu/cscdevops-spring2021/DEVOPS-02.git`
+
 $ `cd DEVOPS-02`
+
 $ `npm install`
 
 ## Pipeline Commands 
 
-#### Configure jenkins and the build environment
+#### Configure jenkins and the build environment 
+
+The command below performs the below mentioned tasks in sequential order: 
+
+    * Automatically configure a build server (config-srv) with jenkins and ansible.
+    * Automatically configure a build environment for a node web application (checkbox.io)
+    * Create a build job
+
 $ `pipeline setup`
 
 #### Trigger a build job (named checkbox.io), wait for output, and print the build log.
+
+The command below will trigger the build job, can be seen in the browser: http://192.168.33.20:9000/
+
 $ `pipeline build checkbox.io -u <admin> -p <admin>`
 
 ## Setup
