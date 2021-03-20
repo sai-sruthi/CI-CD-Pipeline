@@ -33,6 +33,8 @@ The command below will trigger the build job, can be seen in the browser: http:/
 
 $ `pipeline build checkbox.io -u <admin> -p <admin>`
 
+![image1](https://media.github.ncsu.edu/user/16063/files/05d49780-89b0-11eb-875d-7a06442f5b02)
+
 ## Setup
 
 As part of the setup command:
