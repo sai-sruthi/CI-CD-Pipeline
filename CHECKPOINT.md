@@ -23,3 +23,18 @@ Group Call Image:
 
 ![image4](https://media.github.ncsu.edu/user/6557/files/1ae23880-811d-11eb-8156-378fb073e4fd)
 
+<hr/>
+
+# Checkpoint 2
+
+* Identification of the major tasks and sub tasks for Milestone 2 
+* Discussion regarding Workshops 
+* Ownership of major tasks 
+* Project Board update, tasks and milestone creation
+
+Project Board Image: 
+
+![image5](https://media.github.ncsu.edu/user/6557/files/e9b3a480-9006-11eb-8731-d355d2326ab8)
+
+
+
