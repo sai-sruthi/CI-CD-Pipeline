@@ -54,6 +54,10 @@ As part of the setup command:
 * Below is the link demonstrating running of code for the Milestone 1
 
     [Milestone 1](https://drive.google.com/file/d/1YqYwKel_IS_74SSFIRiGx5_AUXrJ4vMx/view?usp=sharing)
+    
+## Checkpoint
+
+* [Checkpoint](https://github.ncsu.edu/cscdevops-spring2021/DEVOPS-02/blob/master/CHECKPOINT.md)
 
 ## References
 
