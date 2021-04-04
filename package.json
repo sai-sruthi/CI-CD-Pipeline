@@ -5,7 +5,8 @@
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test",
+    "static-analysis": "node ./static-analyzer/index.js"
   },
   "keywords": [
     "virtual",
@@ -15,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.0",
+    "esprima": "^4.0.1",
     "jenkins": "^0.28.1",
     "waitssh": "^1.0.3",
     "yargs": "^16.2.0"

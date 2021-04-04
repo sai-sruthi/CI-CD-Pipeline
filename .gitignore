@@ -1,3 +1,4 @@
 node_modules/
 .DS_Store
 .vault-pass
+static-analyzer/test/
