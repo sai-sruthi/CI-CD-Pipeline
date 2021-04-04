@@ -3,6 +3,8 @@ const options = {tokens:true, tolerant: true, loc: true, range: true };
 const fs = require("fs");
 const path = require('path');
 const chalk = require('chalk');
+const DirectoryAnalysis = require('./directory-analysis');
+const Violation = require('./violation');
 
 function main()
 {
@@ -14,7 +16,7 @@ function main()
 		args = ['analysis.js'];
 	}
 	const directory = args[0];
-	const directoryAnalysis = []; // collection of fileAnalysis objects. see below
+	const directoryAnalysis = new DirectoryAnalysis();
 	console.log(chalk.yellow("Parsing ast and running static analysis..."));
 	
 	const files = fs.readdirSync(directory);
@@ -24,14 +26,14 @@ function main()
 		const filePath = path.resolve(directory, `./${file}`);
 		console.log(chalk.blue(`Analyzing ${filePath}...`));
 		complexity(filePath, fileAnalysis);
-		directoryAnalysis.push(fileAnalysis);
+		directoryAnalysis.fileAnalysis.push(fileAnalysis);
 	});
 
 	console.log(chalk.green("Static analysis complete."));
 	console.log(chalk.yellow("Printing analysis report\n"))
 
 	// Report
-	directoryAnalysis.forEach((builders) => {
+	directoryAnalysis.fileAnalysis.forEach((builders) => {
 		for( const node in builders )
 		{
 			const builder = builders[node];
@@ -39,6 +41,10 @@ function main()
 			builder.reportViolations();
 		}
 	});
+
+	if(directoryAnalysis.hasViolations()) {
+		console.error(chalk.red('Thereshold failures found while analyzing files in directory'))
+	}
 };
 
 function complexity(filePath, builders)
@@ -113,6 +119,16 @@ class FunctionBuilder
 	// list of threshold violations
 	#violations = [];
 
+	#thresholds = { // thresholds for the different anlysis properties
+		SimpleCyclomaticComplexity: [{t: 10, color: 'red'}, {t: 4, color: 'yellow'}],
+		Halstead: [{t: 10, color: 'red'}, {t: 3, color: 'yellow'}],
+		ParameterCount: [{t: 10, color: 'red'}, {t: 3, color: 'yellow'}],
+		Length: [{t: 100, color: 'red'}, {t: 10, color: 'yellow'}],
+		MaxNestingDepth: [{t: 5, color: 'red'}],
+		MessageChain: [{t: 10, color: 'red'}]
+	}
+
+
 	constructor() {
 		this.StartLine = 0;
 		this.FunctionName = "";
@@ -132,19 +148,22 @@ class FunctionBuilder
 		this.MessageChain = 0;
 	}
 
-	threshold() {
+	#calculateViolations() {
+		for(const thresholdConfig in this.#thresholds) {
+			const threshold = this.#thresholds[thresholdConfig][0].t;
+			const currentValue = this[thresholdConfig]
+			if(currentValue > threshold) {
+				const violation = new Violation(thresholdConfig, threshold, currentValue);
+				this.#violations.push(violation);
+			}
+		}
+	}
 
-        const thresholds = {
-            SimpleCyclomaticComplexity: [{t: 10, color: 'red'}, {t: 4, color: 'yellow'}],
-            Halstead: [{t: 10, color: 'red'}, {t: 3, color: 'yellow'}],
-            ParameterCount: [{t: 10, color: 'red'}, {t: 3, color: 'yellow'}],
-            Length: [{t: 100, color: 'red'}, {t: 10, color: 'yellow'}],
-			MaxNestingDepth: [{t: 5, color: 'red'}],
-			MessageChain: [{t: 10, color: 'red'}]
-        }
+	threshold() {
+		this.#calculateViolations();
 
         const showScore = (id, value) => {
-            let scores = thresholds[id];
+            let scores = this.#thresholds[id];
             const lowestThreshold = {t: 0, color: 'green'};
             const score = scores.sort( (a,b) => {a.t - b.t}).find(score => score.t <= value) || lowestThreshold;
             return score.color;
