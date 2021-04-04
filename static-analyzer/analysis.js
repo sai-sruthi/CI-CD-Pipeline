@@ -35,7 +35,8 @@ function main()
 		for( const node in builders )
 		{
 			const builder = builders[node];
-			builder.report();
+			builder.reportStatistics();
+			builder.reportViolations();
 		}
 	});
 };
@@ -108,7 +109,10 @@ function complexity(filePath, builders)
 
 // Represent a reusable "class" following the Builder pattern.
 class FunctionBuilder
-{
+{	
+	// list of threshold violations
+	#violations = [];
+
 	constructor() {
 		this.StartLine = 0;
 		this.FunctionName = "";
@@ -124,6 +128,8 @@ class FunctionBuilder
 		this.MaxNestingDepth    = 0;
 		// The max number of conditions if one decision statement.
 		this.MaxConditions      = 0;
+		// the number of . accesors
+		this.MessageChain = 0;
 	}
 
 	threshold() {
@@ -132,7 +138,9 @@ class FunctionBuilder
             SimpleCyclomaticComplexity: [{t: 10, color: 'red'}, {t: 4, color: 'yellow'}],
             Halstead: [{t: 10, color: 'red'}, {t: 3, color: 'yellow'}],
             ParameterCount: [{t: 10, color: 'red'}, {t: 3, color: 'yellow'}],
-            Length: [{t: 100, color: 'red'}, {t: 10, color: 'yellow'} ]
+            Length: [{t: 100, color: 'red'}, {t: 10, color: 'yellow'}],
+			MaxNestingDepth: [{t: 5, color: 'red'}],
+			MessageChain: [{t: 10, color: 'red'}]
         }
 
         const showScore = (id, value) => {
@@ -149,36 +157,61 @@ class FunctionBuilder
 
 	}
 
-	report()
+	reportStatistics()
 	{
 		this.threshold();
 
 		console.log(
-chalk`{blue.underline ${this.FunctionName}}(): at line #${this.StartLine}
+			chalk`{blue.underline ${this.FunctionName}}(): at line #${this.StartLine}
 Parameters: ${this.ParameterCount}\tLength: ${this.Length}
 Cyclomatic: ${this.SimpleCyclomaticComplexity}\tHalstead: ${this.Halstead}
 MaxDepth: ${this.MaxNestingDepth}\tMaxConditions: ${this.MaxConditions}\n`
-);
+		);
+	}
+
+	reportViolations() {
+		this.#violations.forEach((violation) => {
+			violation.report();
+		});
+	}
+
+	// return if the builder has threshold violations
+	hasViolations = function() {
+		return this.#violations.length > 0;
 	}
 };
 
 // A builder for storing file level information.
-function FileBuilder()
-{
-	this.FileName = "";
-	// Number of strings in a file.
-	this.Strings = 0;
-	// Number of imports in a file.
-	this.ImportCount = 0;
+class FileBuilder
+{	
+	// list of threshold violations
+	#violations = [];
 
-	this.report = function()
+	constructor() {
+		this.FileName = "";
+		// Number of strings in a file.
+		this.Strings = 0;
+		// Number of imports in a file.
+		this.ImportCount = 0;
+	}
+
+	reportStatistics = function()
 	{
 		console.log (
-			chalk`{magenta.underline ${this.FileName}}
+chalk`{magenta.underline ${this.FileName}}
 Packages: ${this.ImportCount}
-Strings ${this.Strings}
-`);
+Strings ${this.Strings}`);
+	}
 
+	reportViolations = function() {
+		this.#violations.forEach((violation) => {
+			violation.report();
+		});
+	}
+
+	// return if the builder has threshold violations
+	hasViolations = function() {
+		return this.#violations.length > 0;
 	}
 }
 
