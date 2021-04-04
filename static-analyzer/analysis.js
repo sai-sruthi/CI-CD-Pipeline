@@ -5,6 +5,7 @@ const path = require('path');
 const chalk = require('chalk');
 const DirectoryAnalysis = require('./directory-analysis');
 const Violation = require('./violation');
+const fileReader = require('./file-reader')
 
 function main()
 {
@@ -19,13 +20,13 @@ function main()
 	const directoryAnalysis = new DirectoryAnalysis();
 	console.log(chalk.yellow("Parsing ast and running static analysis..."));
 	
-	const files = fs.readdirSync(directory);
-	console.log(chalk.blue(`Analyzer found ${files.length} file to analyze.`));
+	const files = [];
+	fileReader.loadFiles(directory, files, '.js');
+	console.log(chalk.blue(`Analyzer found ${files.length} JavaScript file(s) to analyze.`));
 	files.forEach((file) => {
 		const fileAnalysis = {}; // any given file can have n builders i.e function, file, etc so we collect all builders in this object
-		const filePath = path.resolve(directory, `./${file}`);
-		console.log(chalk.blue(`Analyzing ${filePath}...`));
-		complexity(filePath, fileAnalysis);
+		console.log(chalk.blue(`Analyzing ${file}...`));
+		complexity(file, fileAnalysis);
 		directoryAnalysis.fileAnalysis.push(fileAnalysis);
 	});
 
