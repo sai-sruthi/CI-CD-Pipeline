@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const blackListDirectories = ['node_modules'];
+
 class FileReader {
     /**
      * return list of absolute path to js files in a directory with recursive search
@@ -14,7 +16,7 @@ class FileReader {
             if(entry.isFile() && (path.extname(absolutePath) === extension)) {
                 files.push(absolutePath);
             }
-            else if(entry.isDirectory()) {
+            else if(entry.isDirectory() && !blackListDirectories.includes(entry.name)) {
                 return this.loadFiles(absolutePath, files, extension);
             }
         });
