@@ -61,23 +61,8 @@ function complexity(filePath, builders)
 	builders[filePath] = fileBuilder;
 
 	// Traverse program with a function visitor.
-	let halsteadSymbols = [];
 	traverseWithParents(ast, function (node) 
 	{
-		halsteadSymbols = [];
-		// File level calculations
-		// 1. Strings
-		if( node.type == "Literal" && typeof node.value == "string" )
-		{
-			fileBuilder.Strings++;
-		}
-
-		// 2. Packages
-		if( node.type == "CallExpression" && node.callee.type == "Identifier" && node.callee.name == "require")
-		{
-			fileBuilder.ImportCount++;			
-		}
-
 		if (node.type === 'FunctionDeclaration') 
 		{
 			var builder = new FunctionBuilder();
@@ -85,27 +70,14 @@ function complexity(filePath, builders)
 			builder.FunctionName = functionName(node);
 			builder.StartLine    = node.loc.start.line;
 			// Calculate function level properties.
-			// 3. Parameters
-			builder.ParameterCount = node.params.length;
 			// 4. Method Length
 			builder.Length = node.loc.end.line - node.loc.start.line;
 
 			// With new visitor(s)...
-			// 5. CyclomaticComplexity & Halstead
 			traverseWithParents(node, function (child) 
 			{
-				if( child.type == "IfStatement" )
-				{
-					builder.SimpleCyclomaticComplexity++;		// cyclomatic complexity		
-				}
+				// peform message chain & max depth calculations here....
 
-				if(['Identifier', 'BinaryExpression'].includes(child.type)) { // Halstead
-					const value = child.operator || child.name;
-					if(!halsteadSymbols.includes(value)) {
-						halsteadSymbols.push(value);
-						builder.Halstead++;
-					}
-				}
 			});
 
 			builders[builder.FunctionName] = builder;
@@ -121,9 +93,6 @@ class FunctionBuilder
 	#violations = [];
 
 	#thresholds = { // thresholds for the different anlysis properties
-		SimpleCyclomaticComplexity: [{t: 10, color: 'red'}, {t: 4, color: 'yellow'}],
-		Halstead: [{t: 10, color: 'red'}, {t: 3, color: 'yellow'}],
-		ParameterCount: [{t: 10, color: 'red'}, {t: 3, color: 'yellow'}],
 		Length: [{t: 100, color: 'red'}, {t: 10, color: 'yellow'}],
 		MaxNestingDepth: [{t: 5, color: 'red'}],
 		MessageChain: [{t: 10, color: 'red'}]
@@ -133,18 +102,10 @@ class FunctionBuilder
 	constructor() {
 		this.StartLine = 0;
 		this.FunctionName = "";
-		// The number of parameters for functions
-		this.ParameterCount  = 0;
 		// The number of lines.
 		this.Length = 0;
-		// Number of if statements/loops + 1
-		this.SimpleCyclomaticComplexity = 1;
-		// Number of unique symbols + operators
-		this.Halstead = 0;
 		// The max depth of scopes (nested ifs, loops, etc)
 		this.MaxNestingDepth    = 0;
-		// The max number of conditions if one decision statement.
-		this.MaxConditions      = 0;
 		// the number of . accesors
 		this.MessageChain = 0;
 	}
@@ -160,32 +121,15 @@ class FunctionBuilder
 		}
 	}
 
-	threshold() {
-		this.#calculateViolations();
-
-        const showScore = (id, value) => {
-            let scores = this.#thresholds[id];
-            const lowestThreshold = {t: 0, color: 'green'};
-            const score = scores.sort( (a,b) => {a.t - b.t}).find(score => score.t <= value) || lowestThreshold;
-            return score.color;
-        };
-
-        this.Halstead = chalk`{${showScore('Halstead', this.Halstead)} ${this.Halstead}}`;
-        this.Length = chalk`{${showScore('Length', this.Length)} ${this.Length}}`;
-        this.ParameterCount = chalk`{${showScore('ParameterCount', this.ParameterCount)} ${this.ParameterCount}}`;
-        this.SimpleCyclomaticComplexity = chalk`{${showScore('SimpleCyclomaticComplexity', this.SimpleCyclomaticComplexity)} ${this.SimpleCyclomaticComplexity}}`;
-
-	}
-
 	reportStatistics()
 	{
-		this.threshold();
+		this.#calculateViolations();
 
 		console.log(
 			chalk`{blue.underline ${this.FunctionName}}(): at line #${this.StartLine}
-Parameters: ${this.ParameterCount}\tLength: ${this.Length}
-Cyclomatic: ${this.SimpleCyclomaticComplexity}\tHalstead: ${this.Halstead}
-MaxDepth: ${this.MaxNestingDepth}\tMaxConditions: ${this.MaxConditions}\n`
+Length: ${this.Length}
+MessageChain: ${this.MessageChain}
+MaxDepth: ${this.MaxNestingDepth}\n`
 		);
 	}
 
@@ -209,18 +153,12 @@ class FileBuilder
 
 	constructor() {
 		this.FileName = "";
-		// Number of strings in a file.
-		this.Strings = 0;
-		// Number of imports in a file.
-		this.ImportCount = 0;
 	}
 
 	reportStatistics = function()
 	{
 		console.log (
-chalk`{magenta.underline ${this.FileName}}
-Packages: ${this.ImportCount}
-Strings ${this.Strings}`);
+chalk`{magenta.underline ${this.FileName}}`);
 	}
 
 	reportViolations = function() {
