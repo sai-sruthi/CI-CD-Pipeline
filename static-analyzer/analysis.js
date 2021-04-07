@@ -52,9 +52,7 @@ function complexity(filePath, builders)
 {
 	var buf = fs.readFileSync(filePath, "utf8");
 	var ast = esprima.parse(buf, options);
-
-	var i = 0;
-
+ 
 	// Initialize builder for file-level information
 	var fileBuilder = new FileBuilder();
 	fileBuilder.FileName = filePath;
@@ -73,12 +71,23 @@ function complexity(filePath, builders)
 			// 4. Method Length
 			builder.Length = node.loc.end.line - node.loc.start.line;
 
-			// With new visitor(s)...
+			const nestingDepths = []; // track depth values from all leaf -> parent traversals
 			traverseWithParents(node, function (child) 
 			{
-				// peform message chain & max depth calculations here....
-
+				if(childrenLength(child) === 0) {
+					let depth = 0; // initialize depth
+					let parent = child.parent;
+					while(parent && parent.type !== 'FunctionDeclaration') { // stop once top function declaration is reached
+						if(isDecision(parent) && !parent.alternate) { // filter out "else if" since they are part of same scope as the "if"
+							depth++
+						}
+						parent = parent.parent;
+					}
+					nestingDepths.push(depth);
+				}
 			});
+
+			builder.MaxNestingDepth = Math.max(...nestingDepths);
 
 			builders[builder.FunctionName] = builder;
 		}
