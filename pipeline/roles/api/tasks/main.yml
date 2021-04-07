@@ -12,6 +12,37 @@
   shell: curl -X POST -H 'Jenkins-Crumb:{{crumb_res.stdout|from_json|json_query('crumb')}}' --cookie /tmp/cookies http://localhost:9000/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken?newTokenName=\checkbox -u admin:admin
   register: api_token
 
+- uri:
+    url: 'http://localhost:9000/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)'
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    return_content: yes
+  register: crumb
+
+- uri:
+    method: POST
+    url: 'http://localhost:9000/credentials/store/system/domain/_/createCredentials'
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    headers:
+      Jenkins-Crumb: "{{ crumb.content.split(':')[1] }}"
+      Cookie: "{{ crumb.set_cookie }}"
+    body: |
+      json={
+        "": "0",
+        "credentials": {
+          "scope": "GLOBAL",
+          "id": "iTrust-credential",
+          "username": "{{ gitHubUser }}",
+          "password": "{{ gitHubPassword }}",
+          "description": "iTrust GitHub Repo credential",
+          "$class": "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl"
+        }
+      }
+    status_code: 302
+
 - name: Set API key as variable
   ansible.builtin.set_fact:
     jenkins_api_token: "{{ api_token.stdout|from_json|json_query('data.tokenValue') }}"

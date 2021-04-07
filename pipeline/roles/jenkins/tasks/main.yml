@@ -8,7 +8,7 @@
 - name: Install java & jenkins job builder
   apt:
     pkg:
-    - openjdk-8-jdk
+    - openjdk-11-jdk
     - jenkins-job-builder
     state: present
 
@@ -63,4 +63,3 @@
 
 # Update Jenkins and install configured plugins.
 - include_tasks: plugins.yml
-

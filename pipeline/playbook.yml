@@ -8,6 +8,7 @@
     - ping
     - checkbox
     - mongo
+    - mysql
     - jenkins
     - api
     - jenkins-jobs
