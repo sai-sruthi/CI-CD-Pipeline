@@ -11,6 +11,10 @@ jenkins_plugins:
     enabled: yes
   git:
     enabled: yes
+  checkstyle:
+    enabled: yes
+  code-coverage-api:
+    enabled: yes
 jenkins_plugins_state: present
 jenkins_plugin_updates_expiration: 86400
 jenkins_plugin_timeout: 30
