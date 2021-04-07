@@ -7,7 +7,7 @@
               git 'https://github.com/chrisparnin/checkbox.io.git'
           }
           stage('Build') {
-              sh mvn clean test integration-test checkstyle:checkstyle'
+              sh 'cd ./server-side/site; npm install; npm install pm2;'
           }
           stage('Test') {
               sh 'cd ./server-side/site; npx pm2 start server.js; npm test;'

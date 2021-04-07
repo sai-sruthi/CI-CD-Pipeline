@@ -6,4 +6,3 @@ mysql_root_username: root
 mysql_root_password: root
 mysql_socket: /var/run/mysqld/mysqld.sock
 server_hostname: 192.168.33.20
-ansible_hostname: 192.168.33.20

@@ -13,7 +13,7 @@ jenkins_plugins:
     enabled: yes
   checkstyle:
     enabled: yes
-  code-coverage-api:
+  jacoco:
     enabled: yes
 jenkins_plugins_state: present
 jenkins_plugin_updates_expiration: 86400
