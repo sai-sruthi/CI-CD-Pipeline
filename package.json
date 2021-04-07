@@ -18,6 +18,8 @@
     "chalk": "^4.1.0",
     "esprima": "^4.0.1",
     "jenkins": "^0.28.1",
+    "linenumber": "^1.0.1",
+    "random-js": "^2.1.0",
     "waitssh": "^1.0.3",
     "yargs": "^16.2.0"
   }
