@@ -1,126 +1,125 @@
-const fs = require('fs');
+var fs = require('fs')
+filePath = "sample.js"
 const Random = require('random-js');
-const path = require('path');
-//const randomizer = new Random(Random.engines.mt19937().autoSeed());
+var glob = require("glob")
 
-var validFileExtensions = ["java"];
+var count = 1;
 
-
-// This method will read all the files in a directory recursively
-const read = (dir) =>
-    fs.readdirSync(dir)
-    .reduce(function(files, file) {
-        if (fs.statSync(path.join(dir, file)).isDirectory()) {
-            var readFilesList = read(path.join(dir, file));
-            if (readFilesList != undefined) {
-                return files.concat(readFilesList);
-            } else {
-                return files;
-            }
+function main()
+{
+	var args = process.argv.slice(2);	
+	var directoryPath = args[0];
+    var getDirectories = function (src, callback) {
+		glob(src + '/**/*.java', callback);
+    };
+      
+    getDirectories(directoryPath, function (err, res) {
+        if (err) {
+            console.log('Error', err);
         } else {
-            if (validFileExtensions.indexOf(file.substring(file.lastIndexOf(".") + 1)) > -1) {
-                return files.concat(path.join(dir, file));
-            } else {
-                return files;
-            }
+            // console.log(res);
+            res.forEach(function(filePath){
+                // console.log("Mutating");
+                if(count < 12){
+                    mutate(filePath);
+                }
+            });
         }
-    }, []);
-
-// This function implements main fuzzer logic, Throws an error if directory is not given
-function main(directoryPath) {
-    var args = process.argv.slice(2);
-
-    var dirPath = directoryPath || args[0];
-
-    if (!dirPath)
-        throw new Error("not valid directory");
-
-    var listOfFiles = read(dirPath);
-    
-
-    listOfFiles.forEach(function(ele) {
-        if (fuzzer.random().bool(0.25)){
-            
-            createRandomChangesInAFile(ele);
-         
-       }
     });
 }
 
-function createRandomChangesInAFile(filePath) {
-    var data = fs.readFileSync(filePath, 'utf-8');
-   // fs.chmod(filePath, fs.constants.S_IRUSR | fs.constants.S_IWUSR, () => {
-        fs.writeFileSync(filePath,'','utf8');
-    var lines = data.split("\n");
-    
-    lines.forEach(function(line) {
+function mutateTarget(filePath, fileArr){
+    // console.log(fileArr);
+    // Mutating == or !=
+    if( fuzzer.random().bool(0.75) ){
+        // console.log(`FUZZING - '==' in ${filePath}`)
+        fileArr = fileArr.replace("==","!=" );
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }else if( fuzzer.random().bool(0.75) ){
+        // console.log(`FUZZING - '!=' in ${filePath}`)
+        fileArr = fileArr.replace("!=","==");
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }
 
-        if (fuzzer.random().bool(0.25)) {
-            
-            let words = line.split(' ');
-            
-            for(var i = 0; i< words.length; i++)
-            {
-                if(words[i]==">")
-                {
-                    words[i] = "<";
-                }
-                else if(words[i]=="<")
-                {
-                    words[i] = ">";
-                }
-                else if(words[i]=="!=")
-                {
-                    words[i] = "==";
-                }
-                else if(words[i]=="==")
-                {
-                    words[i] = "!=";
-                }
-                else if((words[i].startsWith("'") && words[i].endsWith("'") ) ||(words[i].startsWith('"') && words[i].endsWith('"')))
-                {
-                    words[i] = words[i].split("").reverse().join("");
-                }
-                else if(words[i].equals == "true")
-                {
-                    words[i] = "false";
-                }
-                else if(words[i].equals == "false")
-                {
-                    words[i] = "true";
-                }
-                else if(words[i].equals == "||")
-                {
-                    words[i] = "&&";
-                }
-                else if(words[i].equals == "&&")
-                {
-                    words[i] = "||";
-                }
-                
-            }
-            
-            line = words.join(" ");
-            
-            if (line.match(/[0]/)){
-                line = line.replace(/[0]/g, "1");
-            }
-            else if (line.match(/[1]/)){
-                line = line.replace(/[1]/,"0");
-            }
-         }
+    // Mutating 0 or 1
+    if( fuzzer.random().bool(0.75) ){
+        // console.log(`FUZZING - '0' in ${filePath}`)
+        fileArr = fileArr.replace("0","1" );
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }else if( fuzzer.random().bool(0.75) ){
+        // console.log(`FUZZING - '1' in ${filePath}`)
+        fileArr = fileArr.replace("1","0");
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }
 
+    // Mutating <= or >=
+    if( fuzzer.random().bool(0.25) ){
+        // console.log(`FUZZING - '<' in ${filePath}`)
+        fileArr = fileArr.replace(">","<");
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+        turned = 1;
+    }else if( fuzzer.random().bool(0.25) ){
+        // console.log(`FUZZING - '>' in ${filePath}`)
+        fileArr = fileArr.replace("<",">");
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }
 
-        if(line != '\r'){
-            line += '\n';
-        }
+    // Mutating || or &&
+    if( fuzzer.random().bool(0.75) ){
+        // console.log(`FUZZING - '||' in ${filePath}`)
+        fileArr = fileArr.replace("||","&&" );
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }else if( fuzzer.random().bool(0.75) ){
+        // console.log(`FUZZING - '&&' in ${filePath}`)
+        fileArr = fileArr.replace("&&","||");
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }
 
-        fs.appendFileSync(filePath, line);
-    //});
-    });
-    
+    // Mutating true or false
+    if( fuzzer.random().bool(0.75) ){
+        // console.log(`FUZZING - 'true' in ${filePath}`)
+        fileArr = fileArr.replace("true","false" );
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }else if( fuzzer.random().bool(0.75) ){
+        // console.log(`FUZZING - 'false' in ${filePath}`)
+        fileArr = fileArr.replace("false","true");
+        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
+            if (err) return console.log(err);
+        });
+    }
 }
 
+function mutate(filePath){
+    // filePath = 'sample.js';
+    // Mutate 10% of the provided files
+    if( Math.random() > .9 ){
+        var fileArr = fs.readFileSync(filePath).toString('utf-8');
+        
+        console.log(`Mutating File: ${filePath}`);
+        mutateTarget(filePath, fileArr);
+
+        count++;
+    }      
+}
+    
 class fuzzer {
     static random() {
         return fuzzer._random || fuzzer.seed(0)
@@ -132,4 +131,5 @@ class fuzzer {
     }
 };
 
+main();
 exports.main = main;

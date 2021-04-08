@@ -1,13 +1,8 @@
 - hosts: local
   gather_facts: false
   become: yes
-  # vars_files:
-  #  - ./vars/vars.yml
+
   tasks: 
-  # - name: "Copy ansible-srv:/bakerx/fuzzer to config-srv:/home/vagrant/fuzzer"
-  #   copy:
-  #     src: /bakerx/fuzzer
-  #     dest: ""
   - name: Set git environment variables {{gitHubUser}}
     lineinfile:
       path: /etc/environment
@@ -33,16 +28,3 @@
     npm:
       path: "/bakerx/fuzzer"
       
-  - name: Run iTrust test {{check}} time(s)
-    shell: node /bakerx/fuzzer/FS.js {{check}}
-    become: yes
-
-  - name: fetch
-    fetch:
-      src: "/bakerx/result.txt"
-      dest: /bakerx/results
-
-  - name: Print results
-    debug: var=item
-    with_file:
-      - "/bakerx/results/192.168.33.20/home/vagrant/result.txt"
