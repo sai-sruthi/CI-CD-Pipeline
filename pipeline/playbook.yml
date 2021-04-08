@@ -10,5 +10,6 @@
     - mongo
     - mysql
     - jenkins
+    - iTrust_env
     - api
     - jenkins-jobs

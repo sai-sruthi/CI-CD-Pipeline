@@ -1,0 +1,31 @@
+---
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+  become: yes
+
+- name: Download and install packages
+  apt:
+    name: [mysql-server, python-apt, python-dev, mysql-client]
+    update_cache: yes
+  become: yes
+
+- name: Upgrade all packages to the latest version
+  apt:
+    name: "*"
+    state: latest
+  become: yes
+
+- name: insert skip grant tables in my.cnf
+  lineinfile:
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    insertafter: "skip-external-locking"
+    line: "skip-grant-tables"
+  become: true
+
+- name: Restart the MySQL service
+  become: yes
+  service:
+    name: mysql
+    state: restarted
+    enabled: true
