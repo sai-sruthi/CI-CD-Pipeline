@@ -3,13 +3,24 @@
     project-type: pipeline
     dsl: |
       node {
+          def buildStatus = "SUCCESS"
           stage('Source') {
               git 'https://github.com/chrisparnin/checkbox.io.git'
           }
           stage('Build') {
               sh 'cd ./server-side/site; npm install; npm install pm2;'
           }
+          try{
+            stage('Analyze') {
+                sh 'npm run --prefix /bakerx/ static-analysis ./server-side/'
+            }
+          } catch(e) {
+            buildStatus = "FAILURE"
+            echo e.toString()
+          }
           stage('Test') {
               sh 'cd ./server-side/site; npx pm2 start server.js; npm test;'
           }
+
+          currentBuild.result = buildStatus
       }

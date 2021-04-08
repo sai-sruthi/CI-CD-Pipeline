@@ -10,9 +10,10 @@ class FileReader {
      * @param {Array} files 
      */
     loadFiles(directory, files, extension) {
-        const entries = fs.readdirSync(directory, {withFileTypes: true});
+        const absoluteDirectory = path.resolve(process.env.INIT_CWD, directory);
+        const entries = fs.readdirSync(absoluteDirectory, {withFileTypes: true});
         entries.forEach((entry) => {
-            const absolutePath = path.resolve(directory, entry.name);
+            const absolutePath = path.resolve(absoluteDirectory, entry.name);
             if(entry.isFile() && (path.extname(absolutePath) === extension)) {
                 files.push(absolutePath);
             }
