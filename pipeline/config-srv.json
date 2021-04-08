@@ -4,6 +4,7 @@
     "sshPort": 22,
     "ip": "192.168.33.20",
     "user": "vagrant",
+    "memory": 2048,
     "ansibleInventory": "/bakerx/pipeline/inventory",
     "jenkinsPort": 9000,
     "jenkinsUser": "admin",

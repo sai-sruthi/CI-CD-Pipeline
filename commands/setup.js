@@ -20,9 +20,22 @@ exports.builder = yargs => {
             describe: 'Force the old VM to be deleted when provisioning',
             default: false,
             type: 'boolean'
+        },
+        'gh-user': {
+            alias: 'ghu',
+            describe: 'github user',
+            default: configuration.gitHubUser,
+            type: 'string'
+        },
+        'gh-pass': {
+            alias: 'ghp',
+            describe: 'github password',
+            default: configuration.gitHubPassword,
+            type: 'string'
         }
     });
 };
+
 
 
 exports.handler = async argv => {
@@ -36,7 +49,6 @@ exports.handler = async argv => {
 async function setup(force)
 {
     
-
     // We will use the image we've pulled down with bakerx.
     let image = path.join(os.homedir(), '.bakerx', '.persist', 'images', configuration.image, 'box.ovf');
 
@@ -53,7 +65,7 @@ async function setup(force)
     }
 
     console.log(chalk.yellow(`Bringing up machine ${configuration.name}`));
-    await bakerx.execute("run", `${configuration.name} ${configuration.image} --ip ${configuration.ip} --sync`).catch(e => e);
+    await bakerx.execute("run", `${configuration.name} ${configuration.image} --ip ${configuration.ip} --memory ${configuration.memory} --sync`).catch(e => e);
     
     // Explicit wait for boot
     let sshInfo = {port: configuration.sshPort, hostname: configuration.ip}
@@ -100,8 +112,13 @@ async function verifyAnsible() {
 
 
 async function configureServer() {
-    console.log(chalk.blueBright('Setting up Jenkins and Checkbox.io Environment'));
-    let result = ssh(`sudo ansible-playbook /bakerx/pipeline/playbook.yml -i ${configuration.ansibleInventory}`, configServerHost);
+
+    console.log(chalk.blueBright('Setting up Jenkins and Environment for iTrust and Checkbox.io'));
+    const argv = require('yargs/yargs')(process.argv.slice(2))
+    .command('$0', 'the default command', () => {}, (argv) => {
+        console.log('this command will be run by default')
+    }).argv
+    let result = ssh(`sudo ansible-playbook /bakerx/pipeline/playbook.yml -i ${configuration.ansibleInventory} -e gitHubUser=${argv.ghUser} -e gitHubPassword=${argv.ghPass}`, configServerHost);
     if( result.error ) { 
         console.log(result.error); 
         process.exit( result.status ); 
