@@ -5,7 +5,7 @@ const path = require('path');
 const chalk = require('chalk');
 const DirectoryAnalysis = require('./directory-analysis');
 const Violation = require('./violation');
-const fileReader = require('./file-reader')
+const fileReader = require('./file-reader');
 
 function main()
 {
@@ -72,6 +72,8 @@ function complexity(filePath, builders)
 			builder.Length = node.loc.end.line - node.loc.start.line;
 
 			const nestingDepths = []; // track depth values from all leaf -> parent traversals
+			const messageChains = [];
+			let messageChainLength = 0;
 			traverseWithParents(node, function (child) 
 			{
 				if(childrenLength(child) === 0) {
@@ -85,9 +87,23 @@ function complexity(filePath, builders)
 					}
 					nestingDepths.push(depth);
 				}
+
+				if(["ExpressionStatement", "MemberExpression"].includes(child.type)) {
+					traverseWithParents(child, function(nextChild) {
+						if(["MemberExpression"].includes(nextChild.type) && nextChild.property.type === "Identifier") {
+							messageChainLength++;
+						}
+						if(nextChild.type === "ExpressionStatement") {
+							messageChainLength = 0;
+						}
+					});
+					messageChains.push(messageChainLength);
+					messageChainLength = 0;
+				}
 			});
 
 			builder.MaxNestingDepth = Math.max(...nestingDepths);
+			builder.MessageChain = Math.max(0, ...messageChains);
 
 			builders[builder.FunctionName] = builder;
 		}
