@@ -60,7 +60,44 @@ As part of the setup command:
 
 # Milestone 2 - Test 
 
-The commands below perform the below mentioned tasks in sequential order: 
+The commands below perform the tasks mentioned after that in sequential order: 
+
+### Setup-Command
+$ `pipeline setup --gh-user <username> --gh-pass <password>`
+
+- Create a build environment and a build job for the iTrust application : 
+   * Brings up the config-srv vm with focal image and 4GB memory.
+   * Installs Ansible, Mysql, Maven, Java, Jenkins (with necessary plugins).
+   * Creates the Jenkins credential with the username and password entered in the CLI.
+   * Creates a build job based on the pipeline in the jenkins-build-job.yml file.
+
+Created Jenkins Credentials for accessing GitHub Repo:
+![Build_iTrust__Jenkins_0](https://media.github.ncsu.edu/user/6557/files/0d162f00-9a9e-11eb-901e-20aa48ad7b94)
+
+Created Checkbox.io and iTrust build jobs:
+![Build_iTrust__Jenkins_0a](https://media.github.ncsu.edu/user/6557/files/24a9e380-9aaf-11eb-879f-5416667baafb)
+
+
+### Build-Command
+$ `pipeline build iTrust -u <admin> -p <admin>`
+
+- Kickstarts the iTrust build job which performs the following tasks : 
+   * Clones the iTrust repo and updates application.yml and runs mvn test command.
+   * Runs Checkstyle and Jacoco coverage tests and gates the build in case of threshold violations.
+   * Cleans up the directory, database and kills google chrome and stray processes running on port 9001.
+
+
+iTrust build job successfully completed the build stages:
+![Build_iTrust__Jenkins_1](https://media.github.ncsu.edu/user/6557/files/0d162f00-9a9e-11eb-8b90-53bd7ca6fb4f)
+
+Checkstyle and Jacoco coverage summary:
+![Build_iTrust__Jenkins_2](https://media.github.ncsu.edu/user/6557/files/0daec580-9a9e-11eb-9a4f-e280e31bff53)
+
+
+
+$ `pipeline useful-tests -c 1000 --gh-user <username> --gh-pass <password>`
+
+The command is to be provided with an github username and password for ncsu github. 
 
 - Implement a test suite analysis for detecting useful tests : 
    * Generate random changes with your code fuzzer.
@@ -68,15 +105,16 @@ The commands below perform the below mentioned tasks in sequential order:
    * Run units tests with mvn clean test.
    * Record which test cases have failed, and which have passed.
    * Reset code, drop database, discarding your changes. 
-    
-
-$ `pipeline useful-tests -c 1000 --gh-user <username> --gh-pass <password>`
-
-The command is to be provided with an github username and password for ncsu github. 
 
 The following image shows the output for 100 test suite runs
 
 ![image2](https://media.github.ncsu.edu/user/16063/files/9f97b200-9895-11eb-83bc-727bad7c9d27)
+
+
+## Challenges
+- Configuring the build environment particularly Mysql for the iTrust application was initially difficult. 
+- Parsing through the job's console log to identify root cause of build failures was challenging.
+
 
 ## Screencast
 
