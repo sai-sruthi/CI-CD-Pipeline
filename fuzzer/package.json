@@ -1,0 +1,24 @@
+{
+  "name": "fuzzer",
+  "version": "1.0.0",
+  "description": "This application will make random modifications on a random subset of list of files, validate those changes, commit them, run a jenkins job 'n' times and in case of build failure revert those changes",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.ncsu.edu/cscdevops-spring2021/DEVOPS-02.git"
+  },
+  "author": "YOU",
+  "license": "ISC",
+  "dependencies": {
+    "esprima": "^4.0.1",
+    "jenkins": "^0.28.1",
+    "linenumber": "^1.0.1",
+    "random-js": "^2.1.0",
+    "waitssh": "^1.0.3",
+    "yargs": "^16.2.0",
+    "xml2js": "^0.4.17"
+  }
+}

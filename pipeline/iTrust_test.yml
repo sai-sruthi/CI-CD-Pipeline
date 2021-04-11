@@ -1,0 +1,30 @@
+- hosts: local
+  gather_facts: false
+  become: yes
+
+  tasks: 
+  - name: Set git environment variables {{gitHubUser}}
+    lineinfile:
+      path: /etc/environment
+      line: "GH_USER={{ gitHubUser }}\n GH_PASS={{ gitHubPassword }}"
+
+  - name: Copy iTrustBuild.Unix.sh to config-srv:/home/vagrant
+    copy:
+      src: /bakerx/pipeline/roles/iTrust_env/templates/iTrustBuild.Unix.sh
+      dest: "/home/vagrant/iTrustBuild.sh"
+
+  - name: install dos2unix
+    apt:
+      name: dos2unix
+  
+  - name: Dos2Unix iTrustBuild.sh
+    shell: "dos2unix /home/vagrant/iTrustBuild.sh"
+
+  - name: run command 
+    shell: "bash /home/vagrant/iTrustBuild.sh"
+    become: yes
+
+  - name: install node packages in /bakerx/fuzzer
+    npm:
+      path: "/bakerx/fuzzer"
+      
