@@ -15,7 +15,7 @@
       name: dos2unix
   
   - name: Dos2Unix iTrustMutate.sh
-    shell: "dos2unix /home/vagrant/iTrustBuild.sh"
+    shell: "dos2unix /home/vagrant/iTrustMutate.sh"
 
   - name: run command 
     shell: "bash /home/vagrant/iTrustMutate.sh"

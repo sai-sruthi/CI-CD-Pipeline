@@ -31,13 +31,13 @@ function main()
 function mutateTarget(filePath, fileArr){
     // console.log(fileArr);
     // Mutating == or !=
-    if( fuzzer.random().bool(0.75) ){
+    if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - '==' in ${filePath}`)
         fileArr = fileArr.replace("==","!=" );
         fs.writeFile(filePath, fileArr, 'utf8', function (err) {
             if (err) return console.log(err);
         });
-    }else if( fuzzer.random().bool(0.75) ){
+    }else if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - '!=' in ${filePath}`)
         fileArr = fileArr.replace("!=","==");
         fs.writeFile(filePath, fileArr, 'utf8', function (err) {
@@ -46,13 +46,13 @@ function mutateTarget(filePath, fileArr){
     }
 
     // Mutating 0 or 1
-    if( fuzzer.random().bool(0.75) ){
+    if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - '0' in ${filePath}`)
         fileArr = fileArr.replace("0","1" );
         fs.writeFile(filePath, fileArr, 'utf8', function (err) {
             if (err) return console.log(err);
         });
-    }else if( fuzzer.random().bool(0.75) ){
+    }else if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - '1' in ${filePath}`)
         fileArr = fileArr.replace("1","0");
         fs.writeFile(filePath, fileArr, 'utf8', function (err) {
@@ -77,13 +77,13 @@ function mutateTarget(filePath, fileArr){
     }
 
     // Mutating || or &&
-    if( fuzzer.random().bool(0.75) ){
+    if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - '||' in ${filePath}`)
         fileArr = fileArr.replace("||","&&" );
         fs.writeFile(filePath, fileArr, 'utf8', function (err) {
             if (err) return console.log(err);
         });
-    }else if( fuzzer.random().bool(0.75) ){
+    }else if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - '&&' in ${filePath}`)
         fileArr = fileArr.replace("&&","||");
         fs.writeFile(filePath, fileArr, 'utf8', function (err) {
@@ -92,13 +92,13 @@ function mutateTarget(filePath, fileArr){
     }
 
     // Mutating true or false
-    if( fuzzer.random().bool(0.75) ){
+    if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - 'true' in ${filePath}`)
         fileArr = fileArr.replace("true","false" );
         fs.writeFile(filePath, fileArr, 'utf8', function (err) {
             if (err) return console.log(err);
         });
-    }else if( fuzzer.random().bool(0.75) ){
+    }else if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - 'false' in ${filePath}`)
         fileArr = fileArr.replace("false","true");
         fs.writeFile(filePath, fileArr, 'utf8', function (err) {
@@ -110,7 +110,7 @@ function mutateTarget(filePath, fileArr){
 function mutate(filePath){
     // filePath = 'sample.js';
     // Mutate 10% of the provided files
-    if( Math.random() > .9 ){
+    if( Math.random() > .75 ){
         var fileArr = fs.readFileSync(filePath).toString('utf-8');
         
         console.log(`Mutating File: ${filePath}`);
