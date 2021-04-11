@@ -21,7 +21,6 @@
           stage('Test') {
               sh 'cd ./server-side/site; npx pm2 start server.js; npm test;'
           }
-
           currentBuild.result = buildStatus
       }
 
