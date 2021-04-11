@@ -47,10 +47,9 @@ exports.handler = async (argv) => {
 
 async function run(check, ghUser, ghPass) {
   let filePath = "/bakerx/pipeline/iTrust_test.yml";
-  console.log(chalk.blueBright(`Running tests ${check} time(s)...`));
-  const argv = require('yargs/yargs')(process.argv.slice(3))
-
-  console.log(`${ghUser}`);
+  console.log(chalk.blueBright(`Running tests suite ${check} time(s)...`));
+  const argv = require('yargs/yargs')(process.argv.slice(3));
+  
   let result = ssh(
     `sudo ansible-playbook ${filePath} -i ${configuration.ansibleInventory} -e gitHubUser=${ghUser} -e gitHubPassword=${ghPass} -e check=${check}`, configServerHost);
   if (result.error) {
@@ -67,9 +66,9 @@ async function run(check, ghUser, ghPass) {
   } 
   }
 
-  console.log(chalk.blueBright('Pulling and sorting test results from most failures to least failures'));
+  console.log(chalk.yellowBright('Sorting test results from most failures to least failures'));
     var count = JSON.parse(fs.readFileSync('count.json'));
-    console.log(`# of Runs: ${check}`);
+    console.log(chalk.greenBright(`No of Runs of Test Suite are : ${check}`));
 
     function order(jsObj){
       var sortedArray = [];
@@ -82,12 +81,18 @@ async function run(check, ghUser, ghPass) {
           index += 1;
       }
 
-      console.log("Overall Test Mutations are " + overall+"/"+(index*100));
+      var mutation =( overall * 100) / (index*check);
+
+      console.log(chalk.greenBright("Overall Test Mutations for "+ check +" runs of test suite is : "+ overall+"/"+(index*check) + " - "+mutation+"%"));
 
       return sortedArray.sort(function(a,b){return a[0] - b[0]}).reverse();
   }
 
 ;
-    console.log(order(count)); //{file:number}
+   count = order(count); //{file:number}
+   for(var i in count)
+   {
+       console.log(chalk.yellowBright(count[i][0]+"/"+check+" , "+count[i][1]));
+   } 
 
 }
