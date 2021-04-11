@@ -106,21 +106,24 @@ The command is to be provided with an github username and password for ncsu gith
    * Record which test cases have failed, and which have passed.
    * Reset code, drop database, discarding your changes. 
 
-The following image shows the output for 100 test suite runs
+The following image shows the output for 1000 test suite runs
 
-![image2](https://media.github.ncsu.edu/user/16063/files/9f97b200-9895-11eb-83bc-727bad7c9d27)
+![TestSuite1000](https://media.github.ncsu.edu/user/16063/files/df88b000-9ab4-11eb-824e-742a77af3499)
 
+The output of the test suite run can be seen in the file names count.json
 
 ## Challenges
 - Configuring the build environment particularly Mysql for the iTrust application was initially difficult. 
 - Parsing through the job's console log to identify root cause of build failures was challenging.
-
+- Configuring the MySql Username and password for iTrust application
+- Reclowning the iTrust application in the VM, as mutation of test cases was not possible for the folder present in the jenkins buil job 
+- Generating output for 1000 runs of test suite took almost 14hours of run time  
 
 ## Screencast
 
-* Below are the links demonstrating running of code for the Milestone 2 in parts
+* Below are the links demonstrating running of code for the Milestone 2 
 
-    [Milestone 2 Fuzzing](https://drive.google.com/file/d/1hEWq7X0Geg1v04PX8ktQfztSqsGMFJFn/view?usp=sharing)
+    [Milestone 2](https://drive.google.com/file/d/1GD4ajQgkBIHXeNcWFKa7_hUuaNFdJH-v/view?usp=sharing)
 
 ## Checkpoint
 
