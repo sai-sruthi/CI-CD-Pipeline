@@ -1,7 +1,6 @@
 const esprima = require("esprima");
 const options = {tokens:true, tolerant: true, loc: true, range: true };
 const fs = require("fs");
-const path = require('path');
 const chalk = require('chalk');
 const DirectoryAnalysis = require('./directory-analysis');
 const Violation = require('./violation');
@@ -44,7 +43,8 @@ function main()
 	});
 
 	if(directoryAnalysis.hasViolations()) {
-		console.error(chalk.red('Thereshold failures found while analyzing files in directory'))
+		console.error(chalk.red('Thereshold failures found while analyzing files in directory'));
+		process.exitCode = 1; // return failiure to callee
 	}
 };
 
