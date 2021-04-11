@@ -13,7 +13,17 @@ jenkins_plugins:
     enabled: yes
   checkstyle:
     enabled: yes
+  code-coverage-api:
+    enabled: yes
   jacoco:
+    enabled: yes
+  junit:
+    enabled: yes
+  jetty:
+    enabled: yes
+  spring-boot:
+    enabled: yes
+  warnings-ng:
     enabled: yes
 jenkins_plugins_state: present
 jenkins_plugin_updates_expiration: 86400

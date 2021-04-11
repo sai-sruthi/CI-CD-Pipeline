@@ -1,6 +1,8 @@
 const chalk = require('chalk');
 const configuration = require('../pipeline/config-srv.json');
 const jenkins = require('jenkins')({ baseUrl: `http://${configuration.jenkinsUser}:${configuration.jenkinsPassword}@${configuration.ip}:${configuration.jenkinsPort}`, crumbIssuer: true, promisify: true });
+const ssh = require('../lib/ssh');
+const configServerHost = `${configuration.user}@${configuration.ip}`;
 
 exports.command = 'build [job]';
 exports.desc = 'trigger jenkins build job';
@@ -52,6 +54,12 @@ async function triggerJob(jobName) {
 
     const buildLog = await jenkins.build.log({name: jobName, number: buildId});
     console.log(buildLog);
+    
+    console.log('Killing Chrome...');
+    ssh('sudo pkill -9 chrome', configServerHost);
+    
+    console.log('Killing stray jetty processes...');
+    ssh('fuser -k 9001/tcp', configServerHost);
 }
 
 /**

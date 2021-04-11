@@ -38,6 +38,7 @@
                             git credentialsId: 'iTrust-credential', url: 'https://github.ncsu.edu/engr-csc326-staff/iTrust2-v8'
                             // Checkout to a specific branch in your repo.
                             sh "git checkout main"
+                            sh "cp /bakerx/pom.xml /var/lib/jenkins/jobs/iTrust/workspace/iTrust2/pom.xml"
                         }
                     }   
                 }
@@ -45,13 +46,29 @@
                     steps {
                         sh 'cd /var/lib/jenkins/jobs/iTrust/workspace/iTrust2/src/main/resources; cp application.yml.template application.yml'
                         sh 'sed -i "s/password:/password: root/" "/var/lib/jenkins/jobs/iTrust/workspace/iTrust2/src/main/resources/application.yml"'
-                        sh 'cd /var/lib/jenkins/jobs/iTrust/workspace/iTrust2; mvn -Dmaven.test.failure.ignore=true clean install'
                     }
                 }
                 stage('Test') {
                     steps {
-                        sh 'cd /var/lib/jenkins/jobs/iTrust/workspace/iTrust2; mvn clean test integration-test checkstyle:checkstyle;'
+                        sh 'cd /var/lib/jenkins/jobs/iTrust/workspace/iTrust2; mvn clean test integration-test jacoco:report checkstyle:checkstyle'
+                    }
+                }                
+                stage('Analysis') {
+                    steps {                        
+                        recordIssues(tools: [checkStyle(pattern: '**/target/checkstyle-result.xml', reportEncoding: 'UTF-8')],, qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]])
+                        jacoco(execPattern: '**/**.exec', classPattern: '**/classes', sourcePattern: '**/src', exclusionPattern: '**/*Test*.class', changeBuildStatus: true, minimumInstructionCoverage: '30', maximumInstructionCoverage: '60', minimumLineCoverage: '30', maximumLineCoverage: '60', minimumClassCoverage: '30', maximumClassCoverage: '75', minimumMethodCoverage: '30', maximumMethodCoverage: '60', minimumBranchCoverage: '30', maximumBranchCoverage: '40', minimumComplexityCoverage: '30', maximumComplexityCoverage: '50')                        
                     }
                 }
+            }
+            post {
+                always {
+                    echo 'Build Job Completed!'
+                    echo 'Cleaning up workspace...'
+                    deleteDir() /* clean up our workspace */
+
+                    echo 'Dropping databases'
+                    sh 'mysql -u root -proot -e "DROP DATABASE IF EXISTS iTrust2_test;"'
+
+                }    
             }
         }
