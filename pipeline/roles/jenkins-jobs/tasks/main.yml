@@ -1,2 +1,2 @@
-- name: Creating checkbox.io build job
+- name: Creating checkbox.io and iTrust build jobs
   shell: jenkins-jobs --conf /bakerx/pipeline/jenkins_jobs.ini --password {{jenkins_api_token}} update /bakerx/pipeline/jenkins-build-job.yml

@@ -89,6 +89,7 @@ async function postconfiguration(name)
     await copyVaultPasswordFile();
     await verifyAnsible();
     await configureServer();
+    await startChrome();
 }
 
 /**
@@ -123,6 +124,19 @@ async function configureServer() {
         console.log(result.error); 
         process.exit( result.status ); 
     }
+}
+
+async function startChrome() {
+    try {
+        ssh(`sudo apt-get install -y libappindicator1 fonts-liberation`,configServerHost);
+        ssh(`sudo apt-get install -f`,configServerHost);
+        ssh(`wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb`,configServerHost);        
+        ssh(`sudo apt install ./google-chrome-stable_current_amd64.deb`,configServerHost);
+        ssh(`google-chrome-stable --headless --disable-gpu --print-to-pdf https://gf.dev/`,configServerHost);
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }   
 }
 
 /**
