@@ -1,0 +1,23 @@
+- hosts: local
+  gather_facts: false
+  become: yes
+  # vars_files:
+  #  - ./vars/vars.yml
+  tasks: 
+
+  - name: Copy iTrustMutate.Unix.sh to config-srv:/home/vagrant
+    copy:
+      src: /bakerx/pipeline/roles/iTrust_env/templates/iTrustMutate.Unix.sh
+      dest: "/home/vagrant/iTrustMutate.sh"
+
+  - name: install dos2unix
+    apt:
+      name: dos2unix
+  
+  - name: Dos2Unix iTrustMutate.sh
+    shell: "dos2unix /home/vagrant/iTrustBuild.sh"
+
+  - name: run command 
+    shell: "bash /home/vagrant/iTrustMutate.sh"
+    become: yes
+
