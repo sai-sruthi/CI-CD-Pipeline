@@ -60,22 +60,6 @@ function mutateTarget(filePath, fileArr){
         });
     }
 
-    // Mutating <= or >=
-    if( fuzzer.random().bool(0.25) ){
-        // console.log(`FUZZING - '<' in ${filePath}`)
-        fileArr = fileArr.replace(">","<");
-        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
-            if (err) return console.log(err);
-        });
-        turned = 1;
-    }else if( fuzzer.random().bool(0.25) ){
-        // console.log(`FUZZING - '>' in ${filePath}`)
-        fileArr = fileArr.replace("<",">");
-        fs.writeFile(filePath, fileArr, 'utf8', function (err) {
-            if (err) return console.log(err);
-        });
-    }
-
     // Mutating || or &&
     if( fuzzer.random().bool(0.25) ){
         // console.log(`FUZZING - '||' in ${filePath}`)
@@ -110,7 +94,7 @@ function mutateTarget(filePath, fileArr){
 function mutate(filePath){
     // filePath = 'sample.js';
     // Mutate 10% of the provided files
-    if( Math.random() > .75 ){
+    if( Math.random() > .25 ){
         var fileArr = fs.readFileSync(filePath).toString('utf-8');
         
         console.log(`Mutating File: ${filePath}`);
