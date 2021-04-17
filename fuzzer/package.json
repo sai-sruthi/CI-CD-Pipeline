@@ -14,11 +14,12 @@
   "license": "ISC",
   "dependencies": {
     "esprima": "^4.0.1",
+    "glob": "^7.1.6",
     "jenkins": "^0.28.1",
     "linenumber": "^1.0.1",
     "random-js": "^2.1.0",
     "waitssh": "^1.0.3",
-    "yargs": "^16.2.0",
-    "xml2js": "^0.4.17"
+    "xml2js": "^0.4.17",
+    "yargs": "^16.2.0"
   }
 }
