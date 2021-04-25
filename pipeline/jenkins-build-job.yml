@@ -21,6 +21,9 @@
           stage('Test') {
               sh 'cd ./server-side/site; npx pm2 start server.js; npm test;'
           }
+          stage('Archive') {
+              archiveArtifacts '**/*'
+          }
           currentBuild.result = buildStatus
       }
 
