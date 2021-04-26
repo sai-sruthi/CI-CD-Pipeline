@@ -17,6 +17,7 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "esprima": "^4.0.1",
+    "got": "^11.8.2",
     "jenkins": "^0.28.1",
     "waitssh": "^1.0.3",
     "yargs": "^16.2.0"
