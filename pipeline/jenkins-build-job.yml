@@ -62,6 +62,12 @@
                         jacoco(execPattern: '**/**.exec', classPattern: '**/classes', sourcePattern: '**/src', exclusionPattern: '**/*Test*.class', changeBuildStatus: true, minimumInstructionCoverage: '30', maximumInstructionCoverage: '60', minimumLineCoverage: '30', maximumLineCoverage: '60', minimumClassCoverage: '30', maximumClassCoverage: '75', minimumMethodCoverage: '30', maximumMethodCoverage: '60', minimumBranchCoverage: '30', maximumBranchCoverage: '40', minimumComplexityCoverage: '30', maximumComplexityCoverage: '50')                        
                     }
                 }
+                stage('Archive') {
+                    steps {
+                        sh 'cd ./iTrust2; mvn package'
+                        archiveArtifacts 'iTrust2/target/*.war'
+                    }
+                }
             }
             post {
                 always {
