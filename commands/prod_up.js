@@ -2,7 +2,7 @@ const child = require('child_process');
 const chalk = require('chalk');
 const path = require('path');
 const os = require('os');
-const got   = require("got");
+const got    = require("got");
 
 const fs = require('fs');
 
