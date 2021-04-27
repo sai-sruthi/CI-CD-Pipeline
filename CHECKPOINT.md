@@ -63,3 +63,6 @@ Deployment artificats are being generated for both checkbox.io & iTrust projects
 ![IP Address](https://media.github.ncsu.edu/user/16063/files/1b389200-a6d1-11eb-9a3f-57bed3de309f)
 
 
+### Created and configured three local instances for canary analysis
+
+![Canary_Setup](https://media.github.ncsu.edu/user/6557/files/66ee3a00-a6d7-11eb-94f0-74e5e54b6ce1)

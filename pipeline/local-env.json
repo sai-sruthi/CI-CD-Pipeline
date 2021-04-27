@@ -1,0 +1,28 @@
+{
+    "blue":{
+        "name": "blue",
+        "image": "focal",
+        "sshPort": 22,
+        "ip": "192.168.44.50",
+        "user": "vagrant",
+        "memory": 512
+    },
+    "green":{
+        "name": "green",
+        "image": "focal",
+        "sshPort": 22,
+        "ip": "192.168.44.60",
+        "user": "vagrant",
+        "memory": 512
+    },
+    "proxy":{
+        "name": "proxy",
+        "image": "focal",
+        "sshPort": 22,
+        "ip": "192.168.44.70",
+        "user": "vagrant",
+        "memory": 512
+    }
+
+
+}
