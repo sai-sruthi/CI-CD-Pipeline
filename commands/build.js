@@ -56,10 +56,10 @@ async function triggerJob(jobName) {
     console.log(buildLog);
     
     console.log('Killing Chrome...');
-    ssh('sudo pkill -9 chrome', configServerHost);
+    //ssh('sudo pkill -9 chrome', configServerHost);
     
     console.log('Killing stray jetty processes...');
-    ssh('fuser -k 9001/tcp', configServerHost);
+    //ssh('fuser -k 9001/tcp', configServerHost);
 }
 
 /**
