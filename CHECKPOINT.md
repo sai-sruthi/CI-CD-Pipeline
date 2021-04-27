@@ -36,6 +36,7 @@ Project Board Image:
 
 ![image5](https://media.github.ncsu.edu/user/6557/files/e9b3a480-9006-11eb-8731-d355d2326ab8)
 
+<hr/>
 
 # Checkpoint 3
 
@@ -47,11 +48,18 @@ Project Board Image: 4/25
 
 ![image](https://media.github.ncsu.edu/user/15271/files/44054c80-a629-11eb-957e-709405dc8618)
 
-## Major Task Progress - Deploy checkbox.io & iTrust
+### Major Task Progress - Deploy checkbox.io & iTrust
 
 Deployment artificats are being generated for both checkbox.io & iTrust projects in Jenkins
 
 ![image](https://media.github.ncsu.edu/user/15271/files/9e51dd80-a628-11eb-8842-22fc17d1de30)
 
 ![image](https://media.github.ncsu.edu/user/15271/files/baee1580-a628-11eb-9edf-18a31d6a102a)
+
+### Create Cloud Provision instances for checkbox.io & iTrust
+
+![Cloud Provision](https://media.github.ncsu.edu/user/16063/files/1a9ffb80-a6d1-11eb-852a-705bdec7a26e)
+
+![IP Address](https://media.github.ncsu.edu/user/16063/files/1b389200-a6d1-11eb-9a3f-57bed3de309f)
+
 
