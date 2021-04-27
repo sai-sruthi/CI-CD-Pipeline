@@ -73,10 +73,10 @@
                 always {
                     echo 'Build Job Completed!'
                     echo 'Cleaning up workspace...'
-                    // deleteDir() /* clean up our workspace */
+                    deleteDir() /* clean up our workspace */
 
                     echo 'Dropping databases'
-                    // sh 'mysql -u root -proot -e "DROP DATABASE IF EXISTS iTrust2_test;"'
+                    sh 'mysql -u root -proot -e "DROP DATABASE IF EXISTS iTrust2_test;"'
 
                 }    
             }
