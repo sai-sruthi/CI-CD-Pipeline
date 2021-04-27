@@ -1,0 +1,60 @@
+servers:
+  - name: blue
+    image: focal
+    ip: 192.168.44.50
+    memory: 1024
+    sync: true
+    up: |
+      sudo apt-get update
+  
+      # node js
+      curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+      sudo apt install nodejs -y
+
+      # express
+      sudo npm install express
+
+      # git
+      sudo apt-get install -y git
+      
+      # mkdir
+      mkdir -p checkpoint.io/blue.git checkpoint.io/www
+
+
+  - name: green
+    image: focal
+    ip: 192.168.44.60
+    memory: 1024
+    sync: true
+    up: |
+      sudo apt-get update
+  
+      # node js
+      curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+      sudo apt install nodejs -y
+
+      # express
+      sudo npm install express
+      
+      # git
+      sudo apt-get install -y git
+      
+      # mkdir
+      mkdir -p checkpoint.io/green.git checkpoint.io/www
+  
+
+  - name: proxy
+    image: focal
+    ip: 192.168.44.70
+    memory: 512
+    sync: true
+    up: |
+      sudo apt-get update
+  
+      # node js
+      curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+      sudo apt install nodejs -y
+      
+      # express
+      sudo npm install express
+  
