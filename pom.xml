@@ -11,6 +11,7 @@
 	</parent>
 	<groupId>edu.ncsu.csc</groupId>
 	<artifactId>iTrust2</artifactId>
+	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>iTrust2</name>
 	<description>iTrust2 with transaction support</description>
