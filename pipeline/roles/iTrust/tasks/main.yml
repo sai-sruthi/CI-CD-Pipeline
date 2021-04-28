@@ -48,9 +48,3 @@
   - name: install maven (and other packages if needed)
     become: yes
     apt: pkg=maven state=latest update_cache=yes cache_valid_time=3600
-
-  - name: Set git environment variables {{gitHubUser}}
-    lineinfile:
-      path: /etc/environment
-      line: "GH_USER={{ gitHubUser }}\n GH_PASS={{ gitHubPassword }}"
-      create: yes
