@@ -1,0 +1,6 @@
+- hosts: checkbox
+  become: yes
+  roles:
+    # - mongo
+    # - checkbox
+    - cloud_checkbox
