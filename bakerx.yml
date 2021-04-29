@@ -13,6 +13,9 @@ servers:
 
       # express
       sudo npm install express
+      
+      #pm2
+      sudo npm install pm2 -g
 
       # git
       sudo apt-get install -y git
@@ -36,6 +39,9 @@ servers:
       # express
       sudo npm install express
       
+      #pm2
+      sudo npm install pm2 -g
+
       # git
       sudo apt-get install -y git
       
