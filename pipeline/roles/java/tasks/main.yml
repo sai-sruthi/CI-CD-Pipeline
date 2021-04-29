@@ -1,0 +1,12 @@
+- name: Update apt pm repo cache 
+  apt: 
+    update_cache: true
+  become: yes
+
+- name: Install java & jenkins job builder
+  apt:
+    pkg:
+    - openjdk-11-jdk
+    - jenkins-job-builder
+    state: present
+  become: yes
