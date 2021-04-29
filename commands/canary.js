@@ -61,7 +61,7 @@ async function provision(){
 async function initiateApp(branch, site) {
 
     host = `${site.user}@${site.ip}`;
-    console.log(chalk.greenBright('Install App and initiate node!'));
+    console.log(chalk.greenBright('Installing and starting micro-service!'));
     
     //Kill stray node processes
     await ssh(`sudo killall node`, host);

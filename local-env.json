@@ -5,7 +5,7 @@
         "sshPort": 22,
         "ip": "192.168.44.50",
         "user": "vagrant",
-        "memory": 512
+        "memory": 1024
     },
     "green":{
         "name": "green",
@@ -13,7 +13,7 @@
         "sshPort": 22,
         "ip": "192.168.44.60",
         "user": "vagrant",
-        "memory": 512
+        "memory": 1024
     },
     "proxy":{
         "name": "proxy",
