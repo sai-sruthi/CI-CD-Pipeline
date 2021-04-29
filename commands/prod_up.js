@@ -5,19 +5,26 @@ const os = require('os');
 const got    = require("got");
 
 const fs = require('fs');
+const sshpk = require('sshpk');
 
+const ssh = require('../lib/ssh');
+const scp = require('../lib/scp');
+
+const configuration = require('../pipeline/config-srv.json');
+const configServerHost = `${configuration.user}@${configuration.ip}`
 
 // api token for rest calls
 var config = {};
 
 // ssh key to ssh into vms
-var ssh_key;
+var ssh_key_fingerprint;
 
 // header to use our token when making REST api requests
 var headers;
 
 var checkboxIp;
 var itrustIp;
+var monitorIp;
 
 var dropletId;
 
@@ -44,6 +51,55 @@ exports.handler = async argv => {
 
 class DigitalOceanProvider
 {
+	async createSSHKey(){
+
+	console.log(chalk.blue('copying .id_rsa.pub to VM home directory'));
+
+    const sshPublicKey = ".ssh/id_rsa.pub";
+	const sshfolder = ".id_rsa.pub"
+    const destPath = path.join(__dirname, "../"); // the vault file is located in the root of the project
+    const sshPublicKeyFile = `${destPath}${sshfolder}`
+    const src = `vagrant@192.168.33.20:~/${sshPublicKey}`; // home directory of the virtual machine
+
+   	await ssh('sudo cat /home/vagrant/.ssh/id_rsa.pub', configServerHost);
+ 
+    await scp(src, sshPublicKeyFile); // initiate secure copy
+
+
+	/* Read in an OpenSSH-format public key */
+	var keyPub = fs.readFileSync('.id_rsa.pub');
+	var key = sshpk.parseKey(keyPub, 'ssh');
+	key =key.toBuffer('ssh').toString();
+
+	//console.log(key);
+
+	var body = 
+		{
+            "name": "My SSH Public Key",
+			"public_key":key 
+		};
+
+		console.log("Attempting to create SSH Key: "+ JSON.stringify(body) );
+
+		let response = await got.post("https://api.digitalocean.com/v2/account/keys", 
+		{
+			headers:headers,
+			json: body
+		}).catch( err => 
+			console.error(chalk.red(`createSSHKey: ${err}`)) 
+		);
+
+		if( !response ) return;
+
+		// console.log(response.statusCode);
+		// console.log(response.body);
+
+		if(response.statusCode == 201)
+		{
+			ssh_key_fingerprint = JSON.parse( response.body ).ssh_key.fingerprint;
+			console.log(chalk.green(`Created ssh key ${ssh_key_fingerprint}`));
+		}
+	}
 	async createDroplet (dropletName, region, imageName )
 	{
 		if( dropletName == "" || region == "" || imageName == "" )
@@ -58,8 +114,7 @@ class DigitalOceanProvider
 			"region":region,
 			"size":"s-1vcpu-1gb",
 			"image":imageName,
-			//"ssh_keys":[ssh_key],
-			"ssh_keys":null,
+			"ssh_keys":[ssh_key_fingerprint],
 			"backups":false,
 			"ipv6":false,
 			"user_data":null,
@@ -126,6 +181,10 @@ class DigitalOceanProvider
 					itrustIp = ip;
 					ipsAdded++;
 					writeFile("itrust", ip);
+				}else if(name == "monitor"){
+					monitorIp = ip;
+					ipsAdded++;
+					writeFile("monitor", ip);
 				}
 
 				clearInterval(ping);
@@ -169,12 +228,17 @@ async function provision()
 
     var checkbox = "checkbox.io";
     var itrust = "iTrust";
+    var monitor = "monitor";
 	var region = "nyc3";
     var image = "debian-10-x64"; 
+
+	await client.createSSHKey();
 
 	await client.createDroplet(checkbox, region, image);
 
 	await client.createDroplet(itrust, region, image);
+
+	await client.createDroplet(monitor, region, image);
 
 }
 
@@ -189,7 +253,6 @@ async function run() {
 	console.log(chalk.greenBright('Prod cloud server!'));
 	// Retrieve our api token from the environment variables.
 	config.token = process.env.DIGITAL_OCEAN_API_KEY;
-	ssh_key = process.env.DIGITAL_OCEAN_SSH_KEY;
 	
 	if( !config.token )
 	{
@@ -197,10 +260,6 @@ async function run() {
 		console.log(`Please set your environment variables with appropriate token.`);
 		console.log(chalk`{italic You may need to refresh your shell in order for your changes to take place.}`);
 		process.exit(1);
-	}
-
-	if(!ssh_key){
-		console.log(chalk`{red.bold DIGITAL_OCEAN_SSH_KEY is not defined!}`)
 	}
 
 	console.log(chalk.green(`Your token is: ${config.token.substring(0,4)}...`));
@@ -218,7 +277,7 @@ async function run() {
 
 function writeFile(name, ip){
 
-	var inventory = "[" + name + "]\n" + ip + "   ansible_ssh_private_key_file=~/.ssh/id_rsa    ansible_user=root\n\n["+ name+ ":vars]\nansible_ssh_common_args='-o StrictHostKeyChecking=no'\n\n";
+	var inventory = "[" + name + "]\n" + ip + "   ansible_ssh_private_key_file=/home/vagrant/.ssh/id_rsa    ansible_user=root\n\n["+ name+ ":vars]\nansible_ssh_common_args='-o StrictHostKeyChecking=no'\n\n";
 
 	fs.appendFile('pipeline/cloud_inventory.ini', inventory, function (err) {
 		if (err) throw err;

@@ -1,0 +1,4 @@
+- hosts: itrust
+  become: yes
+  roles:
+    - iTrust

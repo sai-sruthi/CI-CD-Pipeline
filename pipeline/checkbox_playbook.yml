@@ -1,0 +1,5 @@
+- hosts: checkbox
+  become: yes
+  roles:
+    - mongo
+    - checkbox
