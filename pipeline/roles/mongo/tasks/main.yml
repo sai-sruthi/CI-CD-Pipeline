@@ -28,22 +28,22 @@
     state: started
     enabled: yes
 
-# - name: Install pymongo
-#   pip:
-#     name: pymongo
-#     state: latest
-#   become: yes
+- name: Install pymongo
+  pip:
+    name: pymongo
+    state: latest
+  become: yes
 
-# - name: Create MongoDB root user siteRootAdmin
-#   mongodb_user:
-#     login_port: "{{ mongo_port }}"
-#     database: admin
-#     name: "{{ mongo_user }}"
-#     password: "{{ mongo_password }}"
-#     roles: readWrite
+- name: Create MongoDB root user siteRootAdmin
+  mongodb_user:
+    login_port: "{{ mongo_port }}"
+    database: admin
+    name: "{{ mongo_user }}"
+    password: "{{ mongo_password }}"
+    roles: readWrite
 
-# - name: Set mongo environment variables
-#   lineinfile:
-#     path: /etc/environment
-#     line: "APP_PORT={{ app_port }}\n MONGO_PORT={{ vars.mongo_port }}\n MONGO_USER={{ mongo_user }}\n MONGO_PASSWORD={{ mongo_password }}\n MONGO_IP={{ mongo_ip }}"
-#     create: yes
+- name: Set mongo environment variables
+  lineinfile:
+    path: /etc/environment
+    line: "APP_PORT={{ app_port }}\n MONGO_PORT={{ vars.mongo_port }}\n MONGO_USER={{ mongo_user }}\n MONGO_PASSWORD={{ mongo_password }}\n MONGO_IP={{ mongo_ip }}"
+    create: yes
