@@ -230,7 +230,7 @@ async function provision()
     var itrust = "iTrust";
     var monitor = "monitor";
 	var region = "nyc3";
-    var image = "debian-10-x64"; 
+    var image = "ubuntu-20-04-x64"; 
 
 	await client.createSSHKey();
 
