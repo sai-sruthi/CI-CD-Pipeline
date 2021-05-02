@@ -1,6 +1,12 @@
+- hosts: local
+  become: yes
+  tasks:
+    - name: Stage build
+      include: ./roles/checkbox.io-prod/tasks/stage.yml
 - hosts: checkbox
   become: yes
   roles:
     - app-common
     - mongo
     - checkbox
+    - checkbox.io-prod
