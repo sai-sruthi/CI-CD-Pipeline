@@ -13,6 +13,3 @@
 
 - name: Open port
   shell: 'sudo ufw allow 8080/tcp'
-
-- name: Start tomcat
-  shell: '/opt/tomcat/apache-tomcat-{{ tomcat_version }}/bin/startup.sh'

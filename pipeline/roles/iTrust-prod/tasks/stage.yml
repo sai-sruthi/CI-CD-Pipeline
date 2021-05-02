@@ -1,0 +1,5 @@
+- name: Create staging directory
+  shell: mkdir -p /tmp/builds/iTrust
+
+- name: Download latest war build
+  shell:  curl http://192.168.33.20:9000/job/iTrust/lastSuccessfulBuild/artifact/iTrust2/target/iTrust2-0.0.1-SNAPSHOT.war --output /tmp/builds/iTrust/iTrust2.war

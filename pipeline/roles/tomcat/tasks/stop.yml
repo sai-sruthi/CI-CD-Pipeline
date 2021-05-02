@@ -1,0 +1,2 @@
+- name: Stop tomcat
+  shell: '/opt/tomcat/apache-tomcat-{{ tomcat_version }}/bin/shutdown.sh'
