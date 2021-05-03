@@ -177,6 +177,7 @@ class DigitalOceanProvider
 					checkboxIp = ip;
 					ipsAdded++;
 					addHostToInventory("checkbox", ip);
+					updateNginxConfiguration(ip);
 				}else if(name == "iTrust"){
 					itrustIp = ip;
 					ipsAdded++;
@@ -287,4 +288,10 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 		if (err) throw err;
 		console.log(`Added IP Address for ${name} to inventory file`);
 	});
+}
+
+function updateNginxConfiguration(ip) {
+	const template = fs.readFileSync('pipeline/nginx.template.conf', 'utf-8');
+	var nginxConfiguration = template.replace(/CHECKBOX.IO.IP/gim, ip);
+	fs.writeFileSync('pipeline/nginx.conf', nginxConfiguration);
 }

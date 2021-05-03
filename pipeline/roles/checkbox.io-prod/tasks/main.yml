@@ -1,0 +1,28 @@
+- name: Create checkbox.io application directory
+  shell: mkdir -p /opt/checkbox.io
+
+- name: Add nginx configuration
+  ansible.builtin.copy:
+    src: /bakerx/pipeline/nginx.conf
+    dest: /etc/nginx/
+
+- include: ../../nginx/tasks/restart.yml
+
+- name: Deploy checkbox.io build
+  ansible.builtin.unarchive:
+    src: /tmp/builds/checkbox.io/checkbox.io.zip
+    dest: /opt/checkbox.io
+
+- name: Install pm2
+  shell: 'cd /opt/checkbox.io/archive/server-side/site; npm install pm2'
+
+- name: Start checkbox.io server
+  shell: 'cd /opt/checkbox.io/archive/server-side/site; npx pm2 start server.js'
+
+- name: Stop checkbox.io server
+  shell: 'cd /opt/checkbox.io/archive/server-side/site; npx pm2 delete server'
+
+- name: Start checkbox.io server
+  shell: 'cd /opt/checkbox.io/archive/server-side/site; npx pm2 start server.js'
+
+

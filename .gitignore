@@ -4,3 +4,4 @@ node_modules/
 static-analyzer/test/
 .id_rsa.pub
 pipeline/cloud_inventory.ini
+nginx.conf

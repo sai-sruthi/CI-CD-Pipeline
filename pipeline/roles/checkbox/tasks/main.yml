@@ -9,9 +9,4 @@
     state: latest
   become: yes
 
-- name: Install nginx
-  apt:
-    update_cache: yes
-    name: nginx
-    state: present
-  become: yes
+- include: ../../nginx/tasks/install.yml
