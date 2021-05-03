@@ -6,6 +6,7 @@
   become: true
   roles:
     - ping
+    - app-common
     - checkbox
     - mongo
     - iTrust

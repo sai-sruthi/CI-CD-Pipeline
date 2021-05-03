@@ -1,0 +1,13 @@
+- name: Install pip3 & python tools
+  apt: 
+    pkg: ['python3-pip', python3-setuptools]
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Install utility packages
+  apt:
+    pkg: ['unzip']
+    state: present
+    update_cache: yes
+  become: yes

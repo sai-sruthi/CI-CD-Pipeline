@@ -3,10 +3,9 @@
     update_cache: true
   become: yes
 
-- name: Install java & jenkins job builder
+- name: Install java
   apt:
     pkg:
     - openjdk-11-jdk
-    - jenkins-job-builder
     state: present
   become: yes

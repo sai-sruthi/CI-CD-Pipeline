@@ -1,13 +1,6 @@
 ---
 - include_vars: main.yml
 
-- name: Install pip3 for mongo
-  apt: 
-    pkg: ['python3-pip', python3-setuptools]
-    state: present
-    update_cache: yes
-  become: yes
-
 - name: Import public key for Mongo
   apt_key:
     url: "https://www.mongodb.org/static/pgp/server-4.2.asc"

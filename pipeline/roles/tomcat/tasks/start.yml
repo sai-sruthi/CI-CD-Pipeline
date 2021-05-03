@@ -1,0 +1,2 @@
+- name: Start tomcat
+  shell: 'nohup /opt/tomcat/apache-tomcat-{{ tomcat_version }}/bin/startup.sh'
