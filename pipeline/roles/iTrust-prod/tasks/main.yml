@@ -1,0 +1,8 @@
+- include: ../../tomcat/tasks/stop.yml
+
+- name: Deploy iTrust war build
+  ansible.builtin.copy:
+    src: /tmp/builds/iTrust/iTrust2.war
+    dest: /opt/tomcat/apache-tomcat-{{ tomcat_version }}/webapps
+
+- include: ../../tomcat/tasks/start.yml

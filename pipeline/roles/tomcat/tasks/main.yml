@@ -1,0 +1,15 @@
+- name: Download binary
+  shell: 'wget https://www-eu.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz -P /tmp'
+  become: yes
+
+- name: Create tomcat directory
+  shell: 'mkdir -p /opt/tomcat/'
+
+- name: Extract binary
+  shell: 'sudo tar -xf /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz -C /opt/tomcat/'
+
+- name: Set permissions
+  shell: 'sudo chmod +x /opt/tomcat/apache-tomcat-{{ tomcat_version }}/bin/*.sh'
+
+- name: Open port
+  shell: 'sudo ufw allow 8080/tcp'
