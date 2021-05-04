@@ -176,15 +176,16 @@ class DigitalOceanProvider
 				if(name == "checkbox.io"){
 					checkboxIp = ip;
 					ipsAdded++;
-					writeFile("checkbox", ip);
+					addHostToInventory("checkbox", ip);
+					updateNginxConfiguration(ip);
 				}else if(name == "iTrust"){
 					itrustIp = ip;
 					ipsAdded++;
-					writeFile("itrust", ip);
+					addHostToInventory("itrust", ip);
 				}else if(name == "monitor"){
 					monitorIp = ip;
 					ipsAdded++;
-					writeFile("monitor", ip);
+					addHostToInventory("monitor", ip);
 				}
 
 				clearInterval(ping);
@@ -230,7 +231,7 @@ async function provision()
     var itrust = "iTrust";
     var monitor = "monitor";
 	var region = "nyc3";
-    var image = "debian-10-x64"; 
+    var image = "ubuntu-20-04-x64"; 
 
 	await client.createSSHKey();
 
@@ -245,10 +246,7 @@ async function provision()
 
 async function run() {
 
-	fs.writeFile('pipeline/cloud_inventory.ini', '', function (err) {
-		if (err) throw err;
-		console.log('Reset Inventory File');
-	})
+	fs.copyFileSync('pipeline/inventory', 'pipeline/cloud_inventory.ini');
 
 	console.log(chalk.greenBright('Prod cloud server!'));
 	// Retrieve our api token from the environment variables.
@@ -275,12 +273,25 @@ async function run() {
 }
 
 
-function writeFile(name, ip){
+function addHostToInventory(name, ip, user='root'){
 
-	var inventory = "[" + name + "]\n" + ip + "   ansible_ssh_private_key_file=/home/vagrant/.ssh/id_rsa    ansible_user=root\n\n["+ name+ ":vars]\nansible_ssh_common_args='-o StrictHostKeyChecking=no'\n\n";
+	var inventory = 
+`[${name}]
+${ip}    ansible_ssh_private_key_file=/home/vagrant/.ssh/id_rsa    ansible_user=${user}
+
+[${name}:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+					 
+`;
 
 	fs.appendFile('pipeline/cloud_inventory.ini', inventory, function (err) {
 		if (err) throw err;
 		console.log(`Added IP Address for ${name} to inventory file`);
-	})
+	});
+}
+
+function updateNginxConfiguration(ip) {
+	const template = fs.readFileSync('pipeline/nginx.template.conf', 'utf-8');
+	var nginxConfiguration = template.replace(/CHECKBOX.IO.IP/gim, ip);
+	fs.writeFileSync('pipeline/nginx.conf', nginxConfiguration);
 }

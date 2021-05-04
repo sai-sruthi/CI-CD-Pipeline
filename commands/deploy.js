@@ -38,21 +38,21 @@ exports.handler = async argv => {
 
 
 function copyFile(file){
-    if( fs.existsSync(path.join(__dirname, '..',file))){
-        fs.copyFile( path.join(__dirname, '..',file), path.join(__dirname, '..', 'pipeline', 'cloud_inventory.ini'), (err) => {
-            if (err) throw err;
-            console.log('File was copied to destination');
-        });
-    } else {
-        throw new Error(`File: <${file}> does not exist. Program terminated.`);
-    }
+    return new Promise((resolve, reject) => {
+        if( fs.existsSync(path.join(__dirname, '..',file))){
+            fs.copyFile( path.join(__dirname, '..',file), path.join(__dirname, '..', 'pipeline', 'cloud_inventory.ini'), (err) => {
+                if (err) throw(err);
+                console.log('File was copied to destination');
+                resolve()
+            });
+        } else {
+            throw new Error(`File: <${file}> does not exist. Program terminated.`);
+        }
+    })
 }
 
 async function run(job, inventory) {
-    copyFile(inventory);
-    checkbox = process.env.CHECKBOX_IP;
-    itrust = process.env.ITRUST_IP;
-
+    await copyFile(inventory);
 
     console.log(chalk.greenBright('Deploy'));
     console.log(chalk.magenta(`Running ${job} with ${inventory} inventory file.`));
@@ -61,7 +61,7 @@ async function run(job, inventory) {
 
         // run playbook for itrust
 
-        console.log(chalk.blueBright('\nDeploying itrust'));
+        console.log(chalk.blueBright('\nDeploying iTrust'));
         let result = ssh(`sudo ansible-playbook /bakerx/pipeline/itrust_playbook.yml -i /bakerx/pipeline/cloud_inventory.ini`, configServerHost);
         if( result.error ) { 
             console.log(result.error); 

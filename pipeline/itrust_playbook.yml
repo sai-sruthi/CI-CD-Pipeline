@@ -1,5 +1,13 @@
+- hosts: local
+  become: yes
+  tasks:
+    - name: Stage build
+      include: ./roles/iTrust-prod/tasks/stage.yml
 - hosts: itrust
   become: yes
   roles:
-    - iTrust
+    - app-common
     - java
+    - tomcat
+    - iTrust
+    - iTrust-prod
