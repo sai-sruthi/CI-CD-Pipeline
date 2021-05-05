@@ -3,7 +3,7 @@ const os   = require('os');
 
 const child = require('child_process');
 
-let identifyFile = path.join(os.homedir(), '.bakerx', 'insecure_private_key');
+let identifyFile = path.join(os.homedir(), '.bakerx', 'baker_rsa');
 
 module.exports = function(cmd, host, port) {
     let sshArgs = [];

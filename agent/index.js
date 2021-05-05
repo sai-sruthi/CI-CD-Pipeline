@@ -2,18 +2,19 @@ const redis = require('redis');
 const util  = require('util');
 const os = require('os');
 const si = require('systeminformation');
-const configuration = require('../local-env.json');
 
-const PROXY = configuration.proxy.ip;
-
+const configuration = require('/bakerx/local-env.json');
+const proxy = configuration.proxy;
 
 // Calculate metrics.
+// TASK 1:
 class Agent
 {
     memoryLoad()
     {
        //console.log( os.totalmem(), os.freemem() );
-       return ((os.totalmem() - os.freemem())/os.totalmem())*100;
+       let memLoad = Math.round((((os.totalmem()-os.freemem())/os.totalmem()) + Number.EPSILON) * 100);
+       return memLoad;
     }
     async cpu()
     {
@@ -34,7 +35,7 @@ async function main(name)
 {
     let agent = new Agent();
 
-    let connection = redis.createClient(6379, PROXY, {})
+    let connection = redis.createClient(6379, proxy.ip, {})
     connection.on('error', function(e)
     {
         console.log(e);
@@ -54,4 +55,8 @@ async function main(name)
         await client.publish(name, msg);
         console.log(`Publishing to ${name} server : ${msg}`);
     }, 1000);
+
 }
+
+
+

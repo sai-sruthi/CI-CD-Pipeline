@@ -1,14 +1,15 @@
+
+const child = require('child_process');
 const chalk = require('chalk');
 const path = require('path');
+
+const sshSync = require('../../lib/ssh');
+const scpSync = require('../../lib/scp');
+const VBox = require('../lib/VBoxManage');
+
 const configuration = require('../../local-env.json');
-const sshSync = require('../lib/ssh');
-const scpSync = require('../lib/scp');
-
-
-const BLUE = configuration.blue.ip;
-const GREEN = configuration.green.ip;
-
-const port = 22; // default ssh port
+const blue = configuration.blue;
+const green = configuration.green;
 
 exports.command = 'push';
 exports.desc = 'Install and update monitoring agent running on servers';
@@ -35,29 +36,29 @@ async function run() {
     let agentJS = path.join(__dirname, '../../agent/index.js');
     let package = path.join(__dirname, '../../agent/package.json');
 
-    // Blue Green servers to be monitored
-    let servers = {'blue-srv':BLUE, 'green-srv':GREEN};
-
-    for( let key in servers )
+    let servers = [blue,green];
+    for( let server of servers )
     {
-        console.log(chalk.keyword('pink')(`Updated agent on server: ${key}`));
-        
-        // push agent/index.js
-        result = scpSync (port, agentJS, `vagrant@${servers[key]}:/tmp/agent.js`);
-        if( result.error ) { console.log(result.error); process.exit( result.status ); }
-        // push agent/package.json
-        result = scpSync (port, package, `vagrant@${servers[key]}:/tmp/package.json`);
+         let port=22;
+
+        console.log(chalk.keyword('pink')(`Updated agent on server: ${server.name}`));
+        // agent/index.js
+        result = scpSync (agentJS, `${server.user}@${server.ip}:~/agent.js`);
         if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
-        // Install packages and start forever process on all servers to be monitored.
+        // agent/package.json
+        result = scpSync (package, `${server.user}@${server.ip}:~/package.json`);
+        if( result.error ) { console.log(result.error); process.exit( result.status ); }
+
         if( process.platform=='win32')
-            result = sshSync(`"cd /tmp && npm install && forever stopall && forever start agent.js ${key}"`, `vagrant@${servers[key]}`, port);
+            result = sshSync(`"npm install && forever stopall && forever start agent.js ${server.name}"`, `${server.user}@${server.ip}`, port);
         else
         {
-            result = sshSync(`'cd /tmp && npm install && forever stopall && forever start agent.js ${key}'`, `vagrant@${servers[key]}`, port);
+            result = sshSync(`'npm install && forever stopall && forever start agent.js ${server.name}'`, `${server.user}@${server.ip}`, port);
         }
-        if( result.error ) { console.log(result.error); process.exit( result.status ); }
+        if( result.error ) { console.log(result.error); process.exit( result.status ); } 
     }
 }
+
 
 module.exports.run = run;
