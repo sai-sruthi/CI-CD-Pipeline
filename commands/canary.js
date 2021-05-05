@@ -5,9 +5,8 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const sshSync = require('../lib/ssh');
-const scpSync = require('../lib/scp');
 var agent_push = require('../servers/commands/push.js')
-const VBox = require('../servers/lib/VBoxManage');
+const bakerx = require('../lib/bakerx');
 
 const configuration = require('../local-env.json');
 const blue = configuration.blue;
