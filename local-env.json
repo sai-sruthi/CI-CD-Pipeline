@@ -1,7 +1,7 @@
 {
     "blue":{
         "name": "blue",
-        "image": "focal",
+        "img": "chaos",
         "sshPort": 22,
         "ip": "192.168.44.50",
         "user": "vagrant",
@@ -9,7 +9,7 @@
     },
     "green":{
         "name": "green",
-        "image": "focal",
+        "img": "chaos",
         "sshPort": 22,
         "ip": "192.168.44.60",
         "user": "vagrant",
@@ -17,7 +17,7 @@
     },
     "proxy":{
         "name": "proxy",
-        "image": "focal",
+        "img": "chaos",
         "sshPort": 22,
         "ip": "192.168.44.70",
         "user": "vagrant",
