@@ -125,6 +125,61 @@ The output of the test suite run can be seen in the file names count.json
 
     [Milestone 2](https://drive.google.com/file/d/1GD4ajQgkBIHXeNcWFKa7_hUuaNFdJH-v/view?usp=sharing)
 
+<hr/>
+
+# Milestone 3 - Deploy
+
+## General Tasks
+   * Provision cloud instances and setup monitoring infrastructure.
+   * Implement deployment to cloud instances.
+   * Implement canary analysis (checkbox.io preview microservice)
+
+The node.js project supports the following commands:
+
+```bash
+# Provision cloud instances
+$ pipeline prod up
+<output inventory.ini with production assets>
+
+# Perform a deployment of checkbox.io with given inventory
+$ pipeline deploy checkbox.io -i inventory.ini
+
+# Trigger a build job (named iTrust), wait for output, and print build log.
+# Extend your jenkins build job to create a war file for deployment.
+$ pipeline build iTrust -u <admin> -p <admin>
+
+# Perform a deployment of iTrust with given inventory
+$ pipeline deploy iTrust -i inventory.ini
+
+# Construct canary infrastructure, collect data, and perform analysis on the given branches.
+$ pipeline canary master broken
+<report and canary score and whether passed or failed>
+...
+```
+
+### Provision cloud instances
+
+To provision to the cloud instance we used DIGITAL OCEAN, hence it is required to set the environment variable named DIGITAL_OCEAN_API_KEY using your API Key before performing the deploy command. 
+
+The following image shows login to the remote from config-srv 
+
+![provisionserver](https://media.github.ncsu.edu/user/16063/files/00979600-ad2d-11eb-8c96-7c7f285f593d)
+
+### Deploy checkbox.io and iTrust
+
+### Canary Analysis
+
+
+## Challenges
+
+   * Setting the ssh key fingerprint in digital ocean, as we were intitally trying to send private key as a post parameter and later reliased fingerprint was to be sent. 
+
+## Screencast
+
+* Below are the links demonstrating running of code for the Milestone 2 
+
+    [Milestone 3]()
+
 ## Checkpoint
 
 * [Checkpoint](https://github.ncsu.edu/cscdevops-spring2021/DEVOPS-02/blob/master/CHECKPOINT.md)
