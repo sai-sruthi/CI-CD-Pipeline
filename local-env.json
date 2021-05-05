@@ -17,7 +17,7 @@
     },
     "proxy":{
         "name": "proxy",
-        "img": "chaos",
+        "img": "queues",
         "sshPort": 22,
         "ip": "192.168.44.70",
         "user": "vagrant",
