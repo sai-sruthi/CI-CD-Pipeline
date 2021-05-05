@@ -176,9 +176,9 @@ The following image shows login to the remote from config-srv
 
 ## Screencast
 
-* Below are the links demonstrating running of code for the Milestone 2 
+* Below are the links demonstrating running of code for the Milestone 3 
 
-    [Milestone 3]()
+    [Milestone 3](https://drive.google.com/file/d/196ToTxEJJD8BbFZs8U_Vf-lUK9Y8bcJT/view?usp=sharing)
 
 ## Checkpoint
 
@@ -188,3 +188,4 @@ The following image shows login to the remote from config-srv
 
 - https://github.com/geerlingguy/ansible-role-jenkins
 - https://www.npmjs.com/package/jenkins
+- https://github.com/joyent/node-sshpk
