@@ -167,12 +167,26 @@ The following image shows login to the remote from config-srv
 
 ### Deploy checkbox.io and iTrust
 
+![iTrustDeployment](https://media.github.ncsu.edu/user/15271/files/4c0b3380-aae4-11eb-9932-80bca6a0a472)
+
+![iTrustDeployment2](https://media.github.ncsu.edu/user/15271/files/2f6efb80-aae4-11eb-88b2-5426112ae3e3)
+
+![iTrust-tomcat-manager](https://media.github.ncsu.edu/user/15271/files/6fce7980-aae4-11eb-9e95-af8d886c34a3)
+
+![checkbox1](https://media.github.ncsu.edu/user/15271/files/7c9cd880-ad43-11eb-8929-7fc5abc75529)
+
+![checkbox2](https://media.github.ncsu.edu/user/15271/files/89b9c780-ad43-11eb-9069-9504d4261d1d)
+
+![checbox3](https://media.github.ncsu.edu/user/15271/files/98a07a00-ad43-11eb-80b7-353050ffcba7)
+
 ### Canary Analysis
 
 
 ## Challenges
 
    * Setting the ssh key fingerprint in digital ocean, as we were intitally trying to send private key as a post parameter and later reliased fingerprint was to be sent. 
+
+   * 404 error when trying to access iTrust on production instance. tomcat logs indicates that iTrust was deployed and running properly, however unable to reach in browser.
 
 ## Screencast
 
