@@ -60,8 +60,16 @@ async function provision() {
 
     if(!fs.existsSync(image))
     {
-        console.log(chalk.red(`Could not find queues. Pulling queues image with 'bakerx pull queues cloud-images.ubuntu.com'.`));
-        await bakerx.execute("pull", `queues cloud-images.ubuntu.com`).catch(e => e);
+        console.log(chalk.red(`Could not find queues. Pulling queues image with 'bakerx pull queues CSC-DevOps/Images#Spring2020'.`));
+        await bakerx.execute("pull", `queues CSC-DevOps/Images#Spring2020`).catch(e => e);
+    }
+
+    image = path.join(os.homedir(), '.bakerx', '.persist', 'images', 'chaos', 'box.ovf');
+
+    if(!fs.existsSync(image))
+    {
+        console.log(chalk.red(`Could not find chaos. Pulling chaos image with 'bakerx pull chaos CSC-DevOps/Images#Spring2020'.`));
+        await bakerx.execute("pull", `chaos CSC-DevOps/Images#Spring2020`).catch(e => e);
     }
 
     
