@@ -21,6 +21,13 @@
     "jenkins": "^0.28.1",
     "sshpk": "^1.16.1",
     "waitssh": "^1.0.3",
-    "yargs": "^16.2.0"
+    "yargs": "^16.2.0",
+    "express": "^4.17.1",
+    "http-errors": "^1.7.3",
+    "redis": "^3.0.2",
+    "socket.io": "^2.3.0",
+    "mann-whitney-utest": "^1.0.5",
+    "qs": "^6.10.1",
+    "request": "^2.88.2"
   }
 }

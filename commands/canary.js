@@ -1,16 +1,21 @@
-const chalk = require('chalk');
-const fs    = require('fs');
-const os    = require('os');
-const path  = require('path');
-const bakerx = require('../lib/bakerx');
+
 const child = require('child_process');
-const ssh = require('../lib/ssh');
+const chalk = require('chalk');
+const path = require('path');
+const os = require('os');
+const fs = require('fs');
+const sshSync = require('../lib/ssh');
+const scpSync = require('../lib/scp');
+var agent_push = require('../servers/commands/push.js')
+const VBox = require('../servers/lib/VBoxManage');
+
 const configuration = require('../local-env.json');
 const blue = configuration.blue;
 const green = configuration.green;
+const proxy = configuration.proxy;
 
 exports.command = 'canary [brancha] [branchb]';
-exports.desc = 'Provision a new local development environment and perform canary analysis';
+exports.desc = 'Setup environment and perform Canary analysis';
 exports.builder = yargs => {
     yargs.positional('brancha', {
         descrbie: 'first branch name',
@@ -20,57 +25,114 @@ exports.builder = yargs => {
         descrbie: 'second branch name',
         type: 'string',
         default: 'broken'
+    }).options({
+        privateKey: {
+            describe: 'Install the provided private key on the configuration server',
+            type: 'string'
+        }
     });
 };
 
 
 exports.handler = async argv => {
-    const { brancha, branchb } = argv;
+    const { privateKey, brancha, branchb } = argv;
 
     (async () => {
 
-        await run( brancha, branchb );
-
+        await run( privateKey, brancha, branchb );       
+ 
     })();
 
 };
 
-async function run(brancha, branchb) {
-
+async function run(privateKey, brancha, branchb) {
     await provision();
-    await initiateApp(brancha, blue);
-    await initiateApp(branchb, green);
+    await cloneBranch(blue, brancha);
+    await cloneBranch(green, branchb);
+    agent_push.run();
+    await spawnForeverProcess(blue);
+    await spawnForeverProcess(green);
+    await startProxy();
 }
 
-async function provision(){
-    
-    console.log(chalk.greenBright('Setting up computing environment!'));
+async function provision() {
 
-    let image = path.join(os.homedir(), '.bakerx', '.persist', 'images', 'focal', 'box.ovf');
+    let image = path.join(os.homedir(), '.bakerx', '.persist', 'images', 'queues', 'box.ovf');
 
     if(!fs.existsSync(image))
     {
-        console.log(chalk.red(`Could not find focal. Pulling focal image with 'bakerx pull focal cloud-images.ubuntu.com'.`));
-        await bakerx.execute("pull", `focal cloud-images.ubuntu.com`).catch(e => e);
+        console.log(chalk.red(`Could not find queues. Pulling queues image with 'bakerx pull queues cloud-images.ubuntu.com'.`));
+        await bakerx.execute("pull", `queues cloud-images.ubuntu.com`).catch(e => e);
     }
 
-    await bakerx.execute("run",``).catch(e => e);
+    
+    console.log(chalk.greenBright('Provisioning blue...'));
+    let result = child.spawnSync(`bakerx`, `run blue ${blue.img} --ip ${blue.ip} --sync --memory ${blue.memory}`.split(' '), {shell:true, stdio: 'inherit'} );
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    
+    
+    
+    console.log(chalk.greenBright('Provisioning green...'));
+    result = child.spawnSync(`bakerx`, `run green ${green.img} --ip ${green.ip} --sync --memory ${green.memory}`.split(' '), {shell:true, stdio: 'inherit'} );
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    
+    
+
+    console.log(chalk.greenBright('Provisioning Proxy...'));
+    result = child.spawnSync(`bakerx`, `run proxy ${proxy.img} --ip ${proxy.ip} --sync --memory ${proxy.memory}`.split(' '), {shell:true, stdio: 'inherit'} );
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
 }
 
-async function initiateApp(branch, site) {
+async function cloneBranch(server, branch) {
 
-    host = `${site.user}@${site.ip}`;
-    console.log(chalk.greenBright('Installing and starting micro-service!'));
+    host = `${server.user}@${server.ip}`;
+    console.log(chalk.greenBright(`Cloning checkbox.io micro-service ${branch} branch on ${server.name} vm`));
     
-    //Kill stray node processes
-    await ssh(`sudo killall node`, host);
+    let winCmd = `"if [ -d "checkbox.io-micro-preview" ]; then sudo rm -r "checkbox.io-micro-preview"; fi; git clone -b ${branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git; sudo npm install forever -g"`
+    let macCmd = `'if [ -d "checkbox.io-micro-preview" ]; then sudo rm -r "checkbox.io-micro-preview"; fi; git clone -b ${branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git; sudo npm install forever -g'`
+        
+    let result = null;
+    if( process.platform=='win32') {
+        result = sshSync(winCmd, host);
+    }
 
-    //clean and clone
-    await ssh(`sudo rm -r ~/checkpoint.io/www; sudo mkdir ~/checkpoint.io/www; cd ~/checkpoint.io/www; sudo git clone -b ${branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git`, host);
-    
-    //npm install and pm2 start
-    await ssh(`cd ~/checkpoint.io/www/checkbox.io-micro-preview;sudo npm install; sudo pm2 start index.js;`, host);
+    else { result = sshSync(macCmd, host);}
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
 }
 
+async function spawnForeverProcess(server) {
+
+    host = `${server.user}@${server.ip}`;
+    console.log(chalk.greenBright(`Start checkbox.io micro-service on ${server.name} vm`));
+    
+    let winCmd = `"cd checkbox.io-micro-preview; npm install ; forever start index.js"`;
+    let macCmd = `'cd checkbox.io-micro-preview; npm install ; forever start index.js'`;
+
+    let result = null;
+    if( process.platform=='win32') {
+        result = sshSync(winCmd, host);
+    }
+    else { result = sshSync(macCmd, host);}
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
+
+}
+
+
+async function startProxy() {
+
+    host = `${proxy.user}@${proxy.ip}`;
+    console.log(chalk.greenBright(`Start canary on ${proxy.name} vm`));
+    
+    let winCmd = `"cd /bakerx/proxy; npm install --no-bin-links; node app.js"`;
+    let macCmd = `'cd /bakerx/proxy; npm install --no-bin-links; node app.js'`;
+
+    let result = null;
+    if( process.platform=='win32') {
+        result = sshSync(winCmd, host);
+    }
+    else { result = sshSync(macCmd, host);}
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
+
+}
