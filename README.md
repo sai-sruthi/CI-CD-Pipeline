@@ -181,12 +181,34 @@ The following image shows login to the remote from config-srv
 
 ### Canary Analysis
 
+As part of this analysis, we setup a local environment with three VMs (blue, green and proxy). We also setup a redis-client on the proxy vm to subscribe to the channel of the agents pushed into the blue and green vm.
+
+![Canary_Setup](https://media.github.ncsu.edu/user/6557/files/a4149500-ad85-11eb-94a0-ace2bd1e6e99)
+
+Initially we ran the ```pipeline canary master broken``` command through which we cloned the master branch of the micro-service on blue vm and broken branch on green vm. The command also generates trffic to the blue and green instances and collects metrics from them. It finally performs te canary analysis based on the metrics it received back from the agents and logs a summary in the end.
+
+Response from Blue vm url that has master branch
+![Canary_Blue_Master](https://media.github.ncsu.edu/user/6557/files/a4149500-ad85-11eb-8379-fcfad1e84e7d)
+
+Response from Green vm url that has broken branch
+![Canary_Green_Broken](https://media.github.ncsu.edu/user/6557/files/a4149500-ad85-11eb-9518-6542c6ff6b15)
+
+Canary failed for Master-Broken
+![Canary_FAIL](https://media.github.ncsu.edu/user/6557/files/a4149500-ad85-11eb-8856-8546e28c6a39)
+
+We also ran the ```pipeline canary master master``` command through which we cloned the master branch on both vms and performed canary analysis.
+
+Canary passed for Master-Master
+![Canary_PASS](https://media.github.ncsu.edu/user/6557/files/a4149500-ad85-11eb-8017-9ee2cc6b44ad)
+
 
 ## Challenges
 
    * Setting the ssh key fingerprint in digital ocean, as we were intitally trying to send private key as a post parameter and later reliased fingerprint was to be sent. 
 
    * 404 error when trying to access iTrust on production instance. tomcat logs indicates that iTrust was deployed and running properly, however unable to reach in browser.
+
+   * Establishing connection between the proxy and agents was initially challenging. 
 
 ## Screencast
 
