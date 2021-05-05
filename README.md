@@ -167,11 +167,15 @@ The following image shows login to the remote from config-srv
 
 ### Deploy checkbox.io and iTrust
 
+The following images show the tasks being run as a part of iTrust Deploy: 
+
 ![iTrustDeployment](https://media.github.ncsu.edu/user/15271/files/4c0b3380-aae4-11eb-9932-80bca6a0a472)
 
 ![iTrustDeployment2](https://media.github.ncsu.edu/user/15271/files/2f6efb80-aae4-11eb-88b2-5426112ae3e3)
 
 ![iTrust-tomcat-manager](https://media.github.ncsu.edu/user/15271/files/6fce7980-aae4-11eb-9e95-af8d886c34a3)
+
+The following images show the tasks being run as a part of checkbox.io Deploy: 
 
 ![checkbox1](https://media.github.ncsu.edu/user/15271/files/7c9cd880-ad43-11eb-8929-7fc5abc75529)
 
