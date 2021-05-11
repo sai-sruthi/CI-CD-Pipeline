@@ -1,10 +1,10 @@
-# DEVOPS-02
+# DEVOPS
 
-## Team Details: 
+The CI-CD Pipeline performs the following milestones: 
 
-* Sai Sruthi Talluri - stallur2
-* Srini Iyer - sbiyer
-* Sakthi Murugan - srmuruga
+* https://github.com/CSC-DevOps/Course/blob/master/Project/Pipeline1.md
+* https://github.com/CSC-DevOps/Course/blob/master/Project/Pipeline2.md
+* https://github.com/CSC-DevOps/Course/blob/master/Project/Pipeline3.md
 
 ## How to run 
 Git clone the project library 
